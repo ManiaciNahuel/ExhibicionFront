@@ -1,19 +1,28 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import HomeSucursal from './pages/HomeSucursal';
-import HomeAdmin from './pages/HomeAdmin';
 
 const App = () => {
-    return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<Login />} />
-                <Route path="/sucursal" element={<HomeSucursal />} />
-                <Route path="/admin" element={<HomeAdmin />} />
-            </Routes>
-        </BrowserRouter>
-    );
+  const [usuario, setUsuario] = useState(null);
+
+  useEffect(() => {
+    // Si hay datos en localStorage, los usamos
+    const nombre = localStorage.getItem('nombre');
+    const sucursalId = localStorage.getItem('sucursalId');
+    if (nombre && sucursalId) {
+      setUsuario({ nombre, sucursalId });
+    }
+  }, []);
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={usuario ? <HomeSucursal /> : <Navigate to="/login" />} />
+        <Route path="/login" element={<Login onLoginSuccess={setUsuario} />} />
+      </Routes>
+    </Router>
+  );
 };
 
 export default App;

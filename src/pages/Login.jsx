@@ -1,47 +1,58 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // ⬅️ Importante
 
-const Login = () => {
+const Login = ({ onLoginSuccess }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // ⬅️ Necesitás esto
 
-    const handleLogin = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
-            const res = await axios.post('http://localhost:3000/usuarios/login', {
-                email,
-                password
-            });
+          const res = await axios.post('http://localhost:3000/auth/login', {
+            email,
+            password
+          });
+    
+          const usuario = res.data;
+          console.log('Respuesta:', res.data);
 
-            const user = res.data;
-
-            // Guardamos usuario en localStorage
-            localStorage.setItem('usuario', JSON.stringify(user));
-
-            // Redirigimos según rol
-            if (user.rol === 'admin') {
-                navigate('/admin');
-            } else {
-                navigate('/sucursal');
-            }
-
+    
+          localStorage.setItem('sucursalId', usuario.sucursalId);
+          localStorage.setItem('nombre', usuario.nombre);
+          localStorage.setItem('email', usuario.email);
+          localStorage.setItem('rol', usuario.rol);
+    
+          // Setear usuario y redirigir
+          onLoginSuccess(usuario);
+          navigate('/');
         } catch (err) {
-            setError('Usuario o contraseña incorrectos');
+          console.error(err);
+          alert('Credenciales incorrectas');
         }
-    };
+      };
+    
 
     return (
-        <div style={{ maxWidth: '400px', margin: '0 auto', padding: '2rem' }}>
-            <h2>Iniciar sesión</h2>
-            <form onSubmit={handleLogin}>
-                <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
-                <input type="password" placeholder="Contraseña" value={password} onChange={e => setPassword(e.target.value)} required />
-                <button type="submit">Ingresar</button>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
+        <div>
+            <h2>Login de Sucursal</h2>
+            <form onSubmit={handleSubmit}>
+                <input
+                    type="email"
+                    placeholder="Correo"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                /><br />
+                <input
+                    type="password"
+                    placeholder="Contraseña"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                /><br />
+                <button type="submit">Iniciar Sesión</button>
             </form>
         </div>
     );
