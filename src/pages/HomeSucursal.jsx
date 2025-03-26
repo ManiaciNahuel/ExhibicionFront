@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ProductoEnUbicacion from '../components/ProductoEnUbicacion';
 import ModalEditarCantidad from '../components/ModalEditarCantidad';
+import ModalProductoEnOtraUbicacion from '../components/ModalProductoEnOtraUbicacion';
 
 const HomeSucursal = () => {
     const [codigoUbicacion, setCodigoUbicacion] = useState('');
@@ -11,10 +12,14 @@ const HomeSucursal = () => {
     const [productosCargados, setProductosCargados] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    const [mostrarModalCantidad, setMostrarModalCantidad] = useState(false);
     const [productoExistente, setProductoExistente] = useState(null);
+    const [mostrarModalCantidad, setMostrarModalCantidad] = useState(false);
 
-    const [enProceso, setEnProceso] = useState(new Set()); // 🔒 Control temporal
+    const [productoDuplicado, setProductoDuplicado] = useState(null);
+    const [ubicacionAnterior, setUbicacionAnterior] = useState('');
+    const [mostrarModalDuplicado, setMostrarModalDuplicado] = useState(false);
+
+    const [enProceso, setEnProceso] = useState(new Set());
 
     const sucursalId = localStorage.getItem('sucursalId');
 
@@ -52,18 +57,11 @@ const HomeSucursal = () => {
             return;
         }
 
-        const nuevoSet = new Set(enProceso);
-        nuevoSet.add(codigoBarras);
-        setEnProceso(nuevoSet);
+        setEnProceso(prev => new Set(prev).add(codigoBarras));
 
         try {
-            setCodigoBarras('');
-            setCantidad(1);
-            setEnProceso(prev => new Set(prev).add(codigoBarras));
-
             const res = await axios.get(`http://localhost:3000/productos/${codigoBarras}`);
             const producto = res.data;
-
             if (!producto) {
                 alert('Producto no encontrado');
                 return;
@@ -74,7 +72,6 @@ const HomeSucursal = () => {
             const numero = parseInt(resto.match(/\d+/)[0]);
             const sub = resto.replace(numero, '') || null;
 
-            // ✅ Chequear si ya está en otra ubicación
             const resCheck = await axios.get(`http://localhost:3000/ubicaciones/check`, {
                 params: {
                     codebar: codigoBarras,
@@ -82,42 +79,25 @@ const HomeSucursal = () => {
                 }
             });
 
-            // Filtramos si ya está pero en una ubicación diferente
             const yaEnOtraUbicacion = resCheck.data.find(p => p.ubicacion !== codigoUbicacion);
 
             if (yaEnOtraUbicacion) {
-                alert(`🛑 Este producto ya está cargado en la ubicación ${yaEnOtraUbicacion.ubicacion}. Usá la opción "Mover" si querés cambiarlo.`);
+                setProductoDuplicado({
+                    ...producto,
+                    codebar: codigoBarras,
+                    cantidad,
+                    tipo: tipoUbicacion,
+                    numero,
+                    subdivision: sub
+                });
+                setUbicacionAnterior(yaEnOtraUbicacion.ubicacion);
+                setMostrarModalDuplicado(true);
                 return;
             }
 
-
-            const postRes = await axios.post('http://localhost:3000/ubicaciones', {
-                codebar: codigoBarras,
-                tipo: tipoUbicacion,
-                numero,
-                subdivision: sub,
-                cantidad: parseInt(cantidad),
-                sucursalId: parseInt(sucursalId)
-            });
-
-            const nuevoRegistro = postRes.data;
-
-            setProductosCargados(prev => [
-                ...prev,
-                {
-                    id: nuevoRegistro.id, // ✅ ahora tenés el ID para poder eliminar
-                    nombre: producto.nombre || producto.Producto || 'Sin nombre',
-                    codigo: codigoBarras,
-                    cantidad,
-                    ubicacion: codigoUbicacion
-                }
-            ]);
-
-
-
-        } catch (error) {
-            console.error(error);
-            alert("Error al asignar producto a ubicación");
+            await crearProducto(producto, codigoBarras, cantidad, tipoUbicacion, numero, sub);
+        } catch (err) {
+            console.error("❌ Error al asignar producto:", err);
         } finally {
             setEnProceso(prev => {
                 const nuevo = new Set(prev);
@@ -125,6 +105,66 @@ const HomeSucursal = () => {
                 return nuevo;
             });
         }
+    };
+
+    const crearProducto = async (producto, codigo, cantidad, tipo, numero, subdivision) => {
+        try {
+            const res = await axios.post(`http://localhost:3000/ubicaciones`, {
+                codebar: codigo,
+                tipo,
+                numero,
+                subdivision,
+                cantidad,
+                sucursalId: parseInt(sucursalId)
+            });
+
+            const nuevo = res.data;
+
+            setProductosCargados(prev => [
+                ...prev,
+                {
+                    id: nuevo.id,
+                    nombre: producto.nombre || producto.Producto || 'Sin nombre',
+                    codigo,
+                    cantidad,
+                    ubicacion: codigoUbicacion
+                }
+            ]);
+
+            setCodigoBarras('');
+            setCantidad(1);
+        } catch (error) {
+            alert("Error al agregar producto");
+        }
+    };
+
+    const handleConfirmarDuplicado = async (opcion) => {
+        if (!productoDuplicado) return;
+
+        const { codebar, cantidad, tipo, numero, subdivision } = productoDuplicado;
+
+        if (opcion === 'mover') {
+            try {
+                // Eliminar anterior
+                const resCheck = await axios.get(`http://localhost:3000/ubicaciones/check`, {
+                    params: {
+                        codebar,
+                        sucursalId
+                    }
+                });
+
+                const existente = resCheck.data.find(p => p.ubicacion !== codigoUbicacion);
+                if (existente?.id) {
+                    await axios.delete(`http://localhost:3000/ubicaciones/${existente.id}`);
+                }
+            } catch (err) {
+                console.error("❌ Error al eliminar ubicación anterior:", err);
+            }
+        }
+
+        await crearProducto(productoDuplicado, codebar, cantidad, tipo, numero, subdivision);
+        setMostrarModalDuplicado(false);
+        setProductoDuplicado(null);
     };
 
     const handleGuardarDesdeModal = async (id, nuevaCantidad) => {
@@ -259,7 +299,6 @@ const HomeSucursal = () => {
                         )}
                     </form>
 
-
                     {loading && <div style={{ marginTop: '0.5rem' }}>⏳ Cargando productos...</div>}
 
                     {!loading && productosCargados.length > 0 && (
@@ -287,6 +326,18 @@ const HomeSucursal = () => {
                             producto={productoExistente}
                             onClose={() => setMostrarModalCantidad(false)}
                             onGuardar={handleGuardarDesdeModal}
+                        />
+                    )}
+
+                    {mostrarModalDuplicado && productoDuplicado && (
+                        <ModalProductoEnOtraUbicacion
+                            producto={productoDuplicado}
+                            ubicacionAnterior={ubicacionAnterior}
+                            onConfirmar={handleConfirmarDuplicado}
+                            onClose={() => {
+                                setMostrarModalDuplicado(false);
+                                setProductoDuplicado(null);
+                            }}
                         />
                     )}
                 </>
