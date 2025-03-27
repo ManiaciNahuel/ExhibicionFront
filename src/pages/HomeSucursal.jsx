@@ -5,6 +5,11 @@ import ModalEditarCantidad from '../components/ModalEditarCantidad';
 import ModalProductoEnOtraUbicacion from '../components/ModalProductoEnOtraUbicacion';
 
 const HomeSucursal = () => {
+    useEffect(() => {
+        console.log('✅ Entrando a HomeSucursal');
+      }, []);
+      
+
     const [codigoUbicacion, setCodigoUbicacion] = useState('');
     const [ubicacionConfirmada, setUbicacionConfirmada] = useState(false);
     const [codigoBarras, setCodigoBarras] = useState('');

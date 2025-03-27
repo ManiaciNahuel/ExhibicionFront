@@ -1,0 +1,31 @@
+.ver-ubicaciones-container {
+    padding: 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .ubicaciones-lista {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .ubicacion-item {
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  
+  .ubicacion-header {
+    background-color: #f6511d;
+    color: white;
+    padding: 1rem;
+    cursor: pointer;
+  }
+  
+  .productos-lista {
+    background: #fffaf8;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+  }
+  
