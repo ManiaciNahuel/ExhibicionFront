@@ -19,8 +19,8 @@ const DashboardSucursal = () => {
 
       <div className="dashboard-buttons">
         <button onClick={() => navigate('/carga')}>📦 Cargar Productos</button>
-        <button onClick={() => navigate('/ver-ubicaciones')}>📂 Ver Ubicaciones</button>
-        <button disabled>🔎 Buscar Producto</button>
+        {/* <button onClick={() => navigate('/ver-ubicaciones')}>📂 Ver Ubicaciones</button> */}
+        <button onClick={() => navigate('/buscar-producto')}>🔎 Buscar Producto</button>
       </div>
     </div>
   );

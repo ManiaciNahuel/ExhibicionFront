@@ -1,7 +1,7 @@
 .tipo-selector,
 .numero-selector,
 .subdivision-selector {
-  margin-bottom: 1.5rem;
+
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;

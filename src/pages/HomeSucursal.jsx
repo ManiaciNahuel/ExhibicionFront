@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import ProductoEnUbicacion from '../components/ProductoEnUbicacion';
-import ModalEditarCantidad from '../components/ModalEditarCantidad';
-import ModalProductoEnOtraUbicacion from '../components/ModalProductoEnOtraUbicacion';
+
 import '../styles/HomeSucursal.css';
+import CargaProductos from '../components/CargaProductos';
+import SelectorUbicacion from '../components/SelectorUbicacion';
 
 
 const HomeSucursal = () => {
@@ -27,6 +27,28 @@ const HomeSucursal = () => {
     const [enProceso, setEnProceso] = useState(new Set());
 
     const sucursalId = localStorage.getItem('sucursalId');
+
+    useEffect(() => {
+        if (ubicacionConfirmada && codigoUbicacion) {
+            fetchProductosEnUbicacion();
+        }
+    }, [ubicacionConfirmada, codigoUbicacion]);
+
+    const fetchProductosEnUbicacion = async () => {
+        console.log("🔍 Fetching productos para:", { sucursalId, codigoUbicacion });
+        try {
+            const res = await axios.get(`http://localhost:3000/ubicaciones`, {
+                params: {
+                    sucursal: sucursalId,
+                    ubicacion: codigoUbicacion
+                }
+            });
+            console.log("📦 Productos recibidos:", res.data);
+            setProductosCargados(res.data);
+        } catch (error) {
+            console.error("❌ Error al traer productos:", error);
+        }
+    };
 
     useEffect(() => {
         const fetchUbicacionesPermitidas = async () => {
@@ -66,12 +88,39 @@ const HomeSucursal = () => {
 
 
 
-    const handleConfirmarUbicacion = (e) => {
+    const handleConfirmarUbicacion = async (e) => {
         e.preventDefault();
         const codigo = `${tipoSeleccionado}${numeroSeleccionado}${subdivisionSeleccionada}`;
         setCodigoUbicacion(codigo);
         setUbicacionConfirmada(true);
+        setLoading(true); // ⏳ Empezamos a cargar
+    
+        try {
+            const res = await axios.get(`http://localhost:3000/ubicaciones`, {
+                params: {
+                    sucursal: sucursalId,
+                    ubicacion: codigo
+                }
+            });
+    
+            const productos = res.data.map(p => ({
+                id: p.id,
+                nombre: p.producto?.nombre || 'Sin nombre',
+                codigo: p.codebar,
+                cantidad: p.cantidad,
+                ubicacion: codigo
+            }));
+    
+            setProductosCargados(productos);
+        } catch (error) {
+            console.error("❌ Error al traer productos:", error);
+            alert("No se pudieron cargar los productos para esta ubicación.");
+        } finally {
+            setLoading(false); // ✅ Finalizamos la carga
+        }
     };
+    
+
     const handleAgregarProducto = async (e) => {
         e.preventDefault();
         if (!codigoUbicacion || !codigoBarras || cantidad < 1) return;
@@ -154,9 +203,9 @@ const HomeSucursal = () => {
                 cantidad,
                 sucursalId: parseInt(sucursalId)
             });
-    
+
             const nuevo = res.data;
-    
+
             setProductosCargados(prev => [
                 ...prev,
                 {
@@ -167,7 +216,7 @@ const HomeSucursal = () => {
                     ubicacion: `${tipo}${numero}${subdivision || ''}${numeroSubdivision || ''}`
                 }
             ]);
-    
+
             setCodigoBarras('');
             setCantidad(1);
         } catch (error) {
@@ -175,7 +224,7 @@ const HomeSucursal = () => {
             alert("Error al agregar producto");
         }
     };
-    
+
 
 
     const handleActualizarCantidad = (id, nuevaCantidad) => {
@@ -215,15 +264,15 @@ const HomeSucursal = () => {
 
     const handleConfirmarDuplicado = async (opcion) => {
         if (!productoDuplicado) return;
-
-        const { codebar, cantidad, tipo, numero, subdivision } = productoDuplicado;
-
+    
+        const { codebar, cantidad, tipo, numero, subdivision, numeroSubdivision } = productoDuplicado;
+    
         if (opcion === 'mover') {
             try {
                 const resCheck = await axios.get(`http://localhost:3000/ubicaciones/check`, {
                     params: { codebar, sucursalId }
                 });
-
+    
                 const existente = resCheck.data.find(p => p.ubicacion !== codigoUbicacion);
                 if (existente?.id) {
                     await axios.delete(`http://localhost:3000/ubicaciones/${existente.id}`);
@@ -232,8 +281,8 @@ const HomeSucursal = () => {
                 console.error("❌ Error al eliminar ubicación anterior:", err);
             }
         }
-
-        await crearProducto(productoDuplicado, codebar, cantidad, tipo, numero, subdivision);
+    
+        await crearProducto(productoDuplicado, codebar, cantidad, tipo, numero, subdivision, numeroSubdivision);
         setMostrarModalDuplicado(false);
         setProductoDuplicado(null);
     };
@@ -244,140 +293,45 @@ const HomeSucursal = () => {
             <h2>📦 Carga de Productos por Ubicación</h2>
 
             {!ubicacionConfirmada ? (
-                <form onSubmit={handleConfirmarUbicacion}>
-                    <div className="tipo-selector">
-                        <h4>Tipo de ubicación:</h4>
-                        {["M", "G", "P"].map((tipo) => (
-                            <button
-                                key={tipo}
-                                className={`tipo-btn ${tipoSeleccionado === tipo ? "activo" : ""}`}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    setTipoSeleccionado(tipo);
-                                    setNumeroSeleccionado('');
-                                    setSubdivisionSeleccionada('');
-                                }}
-                            >
-                                {tipo === "M" ? "🧱 Módulo" : tipo === "G" ? "🛒 Góndola" : "📌 Puntera"}
-                            </button>
-                        ))}
-                    </div>
-
-                    {tipoSeleccionado && (
-                        <div className="numero-selector">
-                            <h4>Número:</h4>
-                            {[...new Set(numeros)].map((n) => (
-                                <button
-                                    key={n}
-                                    className={`numero-btn ${numeroSeleccionado === n ? "activo" : ""}`}
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        setNumeroSeleccionado(n);
-                                        setSubdivisionSeleccionada('');
-                                    }}
-                                >
-                                    {n}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-
-                    {numeroSeleccionado && (
-                        <div className="subdivision-selector">
-                            <h4>Estante / Fila:</h4>
-                            {[...new Set(subdivisiones)].map((s) => (
-                                <button
-                                    key={s}
-                                    className={`subdivision-btn ${subdivisionSeleccionada === s ? "activo" : ""}`}
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        setSubdivisionSeleccionada(s);
-                                    }}
-                                >
-                                    {s}
-                                </button>
-                            ))}
-                        </div>
-                    )}
-
-                    {subdivisionSeleccionada && (
-                        <button type="submit" className="btn-confirmar-ubicacion">
-                            ✅ Confirmar Ubicación
-                        </button>
-                    )}
-                </form>
+                <SelectorUbicacion  
+                    tipoSeleccionado={tipoSeleccionado}
+                    setTipoSeleccionado={setTipoSeleccionado}
+                    numeroSeleccionado={numeroSeleccionado}
+                    setNumeroSeleccionado={setNumeroSeleccionado}
+                    subdivisionSeleccionada={subdivisionSeleccionada}
+                    setSubdivisionSeleccionada={setSubdivisionSeleccionada}
+                    numeros={numeros}
+                    subdivisiones={subdivisiones}
+                    handleConfirmarUbicacion={handleConfirmarUbicacion}
+                />
             ) : (
-                <div>
-                    <h3>📍 Ubicación actual: <span style={{ color: 'green' }}>{codigoUbicacion}</span></h3>
-                    <button onClick={() => setUbicacionConfirmada(false)} style={{ marginBottom: '1rem' }}>
-                        🔄 Cambiar ubicación
-                    </button>
-
-                    <form onSubmit={handleAgregarProducto} style={{ marginBottom: '1rem' }}>
-                        <label>📦 Escaneá o escribí el código del producto:</label><br />
-                        <input
-                            type="text"
-                            value={codigoBarras}
-                            onChange={(e) => setCodigoBarras(e.target.value)}
-                            placeholder="Código de barras"
-                            required
-                            style={{ marginRight: '1rem' }}
-                        />
-                        <input
-                            type="number"
-                            value={cantidad}
-                            onChange={(e) => setCantidad(parseInt(e.target.value))}
-                            min="1"
-                            required
-                            style={{ width: '60px', marginRight: '1rem' }}
-                        />
-                        <button type="submit">➕ Agregar</button>
-                    </form>
-
-                    {loading && <p>⏳ Cargando productos...</p>}
-
-                    {!loading && productosCargados.length > 0 && (
-                        <ul style={{ padding: 0 }}>
-                            {productosCargados.map((p) => (
-                                <ProductoEnUbicacion
-                                    key={p.id}
-                                    producto={p}
-                                    onActualizar={handleActualizarCantidad}
-                                    onEliminar={handleEliminarProducto}
-                                    onReubicar={handleReubicarProducto}
-                                />
-                            ))}
-                        </ul>
-                    )}
-
-                    {!loading && productosCargados.length === 0 && (
-                        <div style={{ marginTop: '1rem', backgroundColor: '#e8f0fe', padding: '1rem', borderRadius: '5px' }}>
-                            ℹ️ No hay productos cargados aún en esta ubicación.
-                        </div>
-                    )}
-
-                    {mostrarModalCantidad && productoExistente && (
-                        <ModalEditarCantidad
-                            producto={productoExistente}
-                            onClose={() => setMostrarModalCantidad(false)}
-                            onGuardar={handleGuardarDesdeModal}
-                        />
-                    )}
-
-                    {mostrarModalDuplicado && productoDuplicado && (
-                        <ModalProductoEnOtraUbicacion
-                            producto={productoDuplicado}
-                            ubicacionAnterior={ubicacionAnterior}
-                            onConfirmar={handleConfirmarDuplicado}
-                            onClose={() => {
-                                setMostrarModalDuplicado(false);
-                                setProductoDuplicado(null);
-                            }}
-                        />
-                    )}
-                </div>
-
+                <CargaProductos
+                    codigoUbicacion={codigoUbicacion}
+                    setUbicacionConfirmada={setUbicacionConfirmada}
+                    codigoBarras={codigoBarras}
+                    setCodigoBarras={setCodigoBarras}
+                    cantidad={cantidad}
+                    setCantidad={setCantidad}
+                    handleAgregarProducto={handleAgregarProducto}
+                    loading={loading}
+                    productosCargados={productosCargados}
+                    handleActualizarCantidad={handleActualizarCantidad}
+                    handleEliminarProducto={handleEliminarProducto}
+                    handleReubicarProducto={handleReubicarProducto}
+                    mostrarModalCantidad={mostrarModalCantidad}
+                    productoExistente={productoExistente}
+                    handleGuardarDesdeModal={handleGuardarDesdeModal}
+                    mostrarModalDuplicado={mostrarModalDuplicado}
+                    productoDuplicado={productoDuplicado}
+                    ubicacionAnterior={ubicacionAnterior}
+                    handleConfirmarDuplicado={handleConfirmarDuplicado}
+                    setMostrarModalCantidad={setMostrarModalCantidad}
+                    setMostrarModalDuplicado={setMostrarModalDuplicado}
+                    setProductoDuplicado={setProductoDuplicado}
+                    crearProducto={crearProducto}
+                />
             )}
+
         </div>
     );
 };

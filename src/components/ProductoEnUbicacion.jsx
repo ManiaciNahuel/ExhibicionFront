@@ -8,6 +8,10 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
     const [mostrarModal, setMostrarModal] = useState(false);
     const [moviendo, setMoviendo] = useState(false);
 
+    // Nuevos estados locales para mover ubicación
+    const [tipoSeleccionado, setTipoSeleccionado] = useState('');
+    const [numeroSeleccionado, setNumeroSeleccionado] = useState('');
+    const [subdivisionSeleccionada, setSubdivisionSeleccionada] = useState('');
 
     useEffect(() => {
         if (producto.autoEditar) {
@@ -34,27 +38,17 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
         try {
             const tipo = nuevaUbicacion.match(/^[A-Z]+/)[0];
             const resto = nuevaUbicacion.replace(tipo, '');
-            const numero = parseInt(resto.match(/\d+/)[0]);
-            const subdivision = resto.replace(numero, '') || null;
+            const numero = parseInt(resto.match(/^\d+/)[0]);
+            const subConNum = resto.replace(numero, ''); // ej: "E2"
+            const subdivision = subConNum[0] || null;
+
+            const tempNumSub = parseInt(subConNum.slice(1));
+            const numeroSubdivision = Number.isNaN(tempNumSub) ? null : tempNumSub;
+
+
+
             const sucursalId = parseInt(localStorage.getItem('sucursalId'));
-
-            const check = await axios.get(`http://localhost:3000/ubicaciones?sucursal=${sucursalId}&ubicacion=${nuevaUbicacion}`);
-            const yaExiste = check.data.find(p => p.codebar === producto.codigo);
-
-            if (yaExiste) {
-                alert(`⚠️ El producto "${producto.nombre}" ya existe en la ubicación "${nuevaUbicacion}". 
-    Si desea editar las cantidades, diríjase a esa ubicación. De todos modos, queda eliminado el producto de esta ubicación.`);
-                await axios.delete(`http://localhost:3000/ubicaciones/${producto.id}`);
-                onReubicar(producto.id);
-                setMostrarModal(false);
-                return;
-            }
-            const letraSubdivision = nuevaUbicacion.match(/[A-Za-z]+/)?.[0] || null;
-            const numeroSubdivision = parseInt(nuevaUbicacion.match(/\d+/)?.[0]) || null;
-
-
-            // Crear en nueva ubicación
-            const res = await axios.post('http://localhost:3000/ubicaciones', {
+            console.log("📦 Reubicando con datos:", {
                 codebar: producto.codigo,
                 tipo,
                 numero,
@@ -64,8 +58,33 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
                 sucursalId
             });
 
+            const check = await axios.get(`http://localhost:3000/ubicaciones?sucursal=${sucursalId}&ubicacion=${nuevaUbicacion}`);
+            const yaExiste = check.data.find(p => p.codebar === producto.codigo);
 
-            const nuevaUbic = `${tipo}${numero}${subdivision || ''}`;
+            if (yaExiste) {
+                console.log("🗑 Eliminando producto con ID:", producto.id);
+
+                alert(`⚠️ El producto "${producto.nombre}" ya existe en la ubicación "${nuevaUbicacion}". 
+Si desea editar las cantidades, diríjase a esa ubicación. De todos modos, queda eliminado el producto de esta ubicación.`);
+                await axios.delete(`http://localhost:3000/ubicaciones/${producto.id}`);
+                onReubicar(producto.id);
+                setMostrarModal(false);
+                return;
+            }
+
+            // Crear en nueva ubicación
+            const res = await axios.post('http://localhost:3000/ubicaciones', {
+                codebar: producto.codebar || producto.codigo,
+                tipo,
+                numero,
+                subdivision,
+                numeroSubdivision,
+                cantidad: producto.cantidad,
+                sucursalId
+            });
+
+
+            const nuevaUbic = `${tipo}${numero}${subdivision || ''}${numeroSubdivision || ''}`;
             const nuevoProducto = {
                 id: res.data.id,
                 nombre: producto.nombre,
@@ -73,13 +92,11 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
                 cantidad: producto.cantidad,
                 ubicacion: nuevaUbic
             };
+            console.log("🗑 Eliminando producto con ID:", producto.id);
 
-            // Eliminar de la ubicación actual
             await axios.delete(`http://localhost:3000/ubicaciones/${producto.id}`);
-            onReubicar(producto.id, nuevoProducto, nuevaUbic); // actualizar visualmente
-
-            // 🔥 Agregar visualmente la ubicación si no existe
-            onAgregarUbicacionSiFalta?.(nuevoProducto); // Esta función la pasás desde VerUbicaciones
+            onReubicar(producto.id, nuevoProducto, nuevaUbic);
+            onAgregarUbicacionSiFalta?.(nuevoProducto);
 
             setMostrarModal(false);
         } catch (err) {
@@ -90,12 +107,9 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
         }
     };
 
-
-
-
     return (
         <div style={{ marginBottom: '0.5rem', padding: '0.5rem', border: '1px solid #ccc' }}>
-            <strong>{producto.nombre}</strong> ({producto.codigo})<br />
+            <strong>{producto.nombre || producto.producto?.nombre || "Sin nombre"}</strong> ({producto.codigo || producto.codebar})<br />
             Cantidad:{" "}
             {modoEdicion ? (
                 <input
@@ -121,17 +135,24 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
             <button onClick={() => onEliminar(producto.id)} style={{ marginLeft: '10px' }}>
                 🗑 Eliminar
             </button>
+
             {moviendo && (
                 <div style={{ color: 'orange', marginTop: '0.5rem' }}>
                     ⏳ Moviendo producto de ubicación...
                 </div>
             )}
 
-
             {mostrarModal && (
                 <ConfirmarAccionModal
-                    onClose={() => setMostrarModal(false)}
-                    onConfirmar={handleConfirmarReubicacion}
+                    onConfirm={handleConfirmarReubicacion}
+                    onCancel={() => setMostrarModal(false)}
+                    tipoSeleccionado={tipoSeleccionado}
+                    numeroSeleccionado={numeroSeleccionado}
+                    subdivisionSeleccionada={subdivisionSeleccionada}
+                    setTipoSeleccionado={setTipoSeleccionado}
+                    setNumeroSeleccionado={setNumeroSeleccionado}
+                    setSubdivisionSeleccionada={setSubdivisionSeleccionada}
+                    cantidad={producto.cantidad}
                 />
             )}
         </div>

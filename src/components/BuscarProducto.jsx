@@ -1,54 +1,132 @@
 import React, { useState } from 'react';
+import ProductoEnUbicacion from './ProductoEnUbicacion';
+import axios from 'axios';
 
 const BuscarProducto = () => {
-  const [codebar, setCodebar] = useState('');
-  const [producto, setProducto] = useState(null);
+  const [codigoBarras, setCodigoBarras] = useState('');
+  const [resultado, setResultado] = useState(null);
   const [error, setError] = useState('');
-
-  const buscarProducto = async () => {
-    setProducto(null);
+  const [loading, setLoading] = useState(false);
+  
+  const buscarUbicaciones = async (e = null) => {
+    if (e?.preventDefault) e.preventDefault();
+    setLoading(true);
     setError('');
+    setResultado(null);
 
     try {
-      const res = await fetch(`http://localhost:3000/productos/${codebar}`);
-      if (!res.ok) throw new Error('Producto no encontrado');
-      const data = await res.json();
-      setProducto(data);
+      const sucursalId = localStorage.getItem('sucursalId');
+
+      const ubicacionesRes = await fetch(
+        `http://localhost:3000/ubicaciones/producto/${codigoBarras}?sucursalId=${sucursalId}`
+      );
+      const ubicacionesData = await ubicacionesRes.json();
+
+      if (!Array.isArray(ubicacionesData) || ubicacionesData.length === 0) {
+        setResultado({ producto: null, ubicaciones: [] });
+        return;
+      }
+
+      const productoRes = await fetch(`http://localhost:3000/productos/${codigoBarras}`);
+      const producto = await productoRes.json();
+
+      const ubicacionesTransformadas = ubicacionesData.map((ubic) => ({
+        id: ubic.id,
+        nombre: producto.Producto,
+        codigo: codigoBarras,
+        cantidad: ubic.cantidad,
+        tipo: ubic.tipo,
+        numero: ubic.numero,
+        subdivision: ubic.subdivision,
+        numeroSubdivision: ubic.numeroSubdivision,
+        ubicacion: `${ubic.tipo}${ubic.numero}${ubic.subdivision || ''}${ubic.numeroSubdivision || ''}`
+      }));
+
+      setResultado({
+        producto,
+        ubicaciones: ubicacionesTransformadas
+      });
+
     } catch (err) {
-      setError('❌ Producto no encontrado');
+      console.error('❌ Error al buscar:', err);
+      setError('Ocurrió un error al buscar el producto.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') buscarProducto();
+  const handleEliminarProducto = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3000/ubicaciones/${id}`);
+      // 🔁 Refrescamos la lista luego de eliminar
+      buscarUbicaciones();
+    } catch (err) {
+      console.error("❌ Error al eliminar producto:", err);
+      alert("No se pudo eliminar el producto");
+    }
+  };
+
+  const nombreTipo = (tipo) => {
+    if (tipo === 'G') return 'Góndola';
+    if (tipo === 'M') return 'Módulo';
+    if (tipo === 'P') return 'Puntera';
+    return tipo;
+  };
+
+  const subdivisionTipo = (tipo) => {
+    if (tipo === 'E') return 'Estante';
+    if (tipo === 'R') return 'Fila de Ranurado';
+    return tipo;
   };
 
   return (
-    <div style={{ maxWidth: 500, margin: 'auto' }}>
-      <h2>Buscar producto</h2>
-      <input
-        type="text"
-        value={codebar}
-        onChange={(e) => setCodebar(e.target.value)}
-        onKeyDown={handleKeyPress}
-        placeholder="Escaneá o escribí el código"
-        style={{ padding: '10px', width: '100%', fontSize: '1rem' }}
-      />
-      <button onClick={buscarProducto} style={{ marginTop: 10 }}>Buscar</button>
+    <div style={{ padding: '2rem' }}>
+      <h2>🔍 Buscar Producto</h2>
+      <form onSubmit={buscarUbicaciones}>
+        <input
+          type="text"
+          placeholder="Ingresar código de barras"
+          value={codigoBarras}
+          onChange={(e) => setCodigoBarras(e.target.value)}
+          required
+        />
+        <button type="submit" style={{ marginLeft: '1rem' }}>Buscar</button>
+      </form>
 
-      {producto && (
-        <div style={{ marginTop: 20, background: '#f0f0f0', padding: 15 }}>
-          <h4>✅ Producto encontrado</h4>
-          <p><strong>ID:</strong> {producto.CodPlex}</p>
-          <p><strong>Nombre:</strong> {producto.Producto}</p>
-          <p><strong>Presentación:</strong> {producto.Presentaci}</p>
-          <p><strong>Precio:</strong> ${producto.Precio}</p>
-          <p><strong>Costo:</strong> ${producto.Costo}</p>
-          <p><strong>Activo:</strong> {producto.Activo}</p>
+      {loading && <p>⏳ Buscando...</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      {resultado && (
+        <div style={{ marginTop: '2rem' }}>
+          {resultado.producto ? (
+            <>
+              <h3>Producto: {resultado.producto.Producto}</h3>
+              <h4>Ubicaciones encontradas:</h4>
+              <div>
+                {resultado.ubicaciones.map((p, idx) => (
+                  <div key={idx} style={{ marginBottom: '1.5rem' }}>
+                    <div style={{ marginBottom: '0.5rem', fontWeight: 'bold' }}>
+                      📍 {nombreTipo(p.tipo)} {p.numero}
+                      {p.subdivision && (
+                        <> - {subdivisionTipo(p.subdivision)} {p.numeroSubdivision}</>
+                      )}
+                    </div>
+
+                    <ProductoEnUbicacion
+                      producto={p}
+                      onActualizar={() => buscarUbicaciones({ preventDefault: () => {} })}
+                      onEliminar={() => handleEliminarProducto(p.id)}
+                      onReubicar={() => buscarUbicaciones({ preventDefault: () => {} })}
+                    />
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p>⚠️ Producto no encontrado en esta sucursal.</p>
+          )}
         </div>
       )}
-
-      {error && <div style={{ color: 'red', marginTop: 20 }}>{error}</div>}
     </div>
   );
 };
