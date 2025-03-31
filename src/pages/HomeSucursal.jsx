@@ -3,49 +3,75 @@ import axios from 'axios';
 import ProductoEnUbicacion from '../components/ProductoEnUbicacion';
 import ModalEditarCantidad from '../components/ModalEditarCantidad';
 import ModalProductoEnOtraUbicacion from '../components/ModalProductoEnOtraUbicacion';
+import '../styles/HomeSucursal.css';
+
 
 const HomeSucursal = () => {
-    useEffect(() => {
-        console.log('✅ Entrando a HomeSucursal');
-      }, []);
-      
-
+    const [tipoSeleccionado, setTipoSeleccionado] = useState('');
+    const [numeroSeleccionado, setNumeroSeleccionado] = useState('');
+    const [subdivisionSeleccionada, setSubdivisionSeleccionada] = useState('');
     const [codigoUbicacion, setCodigoUbicacion] = useState('');
     const [ubicacionConfirmada, setUbicacionConfirmada] = useState(false);
+
     const [codigoBarras, setCodigoBarras] = useState('');
     const [cantidad, setCantidad] = useState(1);
     const [productosCargados, setProductosCargados] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [ubicacionesPermitidas, setUbicacionesPermitidas] = useState([]);
 
+    const [loading, setLoading] = useState(false);
     const [productoExistente, setProductoExistente] = useState(null);
     const [mostrarModalCantidad, setMostrarModalCantidad] = useState(false);
-
     const [productoDuplicado, setProductoDuplicado] = useState(null);
     const [ubicacionAnterior, setUbicacionAnterior] = useState('');
     const [mostrarModalDuplicado, setMostrarModalDuplicado] = useState(false);
-
     const [enProceso, setEnProceso] = useState(new Set());
 
     const sucursalId = localStorage.getItem('sucursalId');
 
+    useEffect(() => {
+        const fetchUbicacionesPermitidas = async () => {
+            try {
+                const res = await axios.get(`http://localhost:3000/ubicaciones/permitidas?sucursalId=${sucursalId}`);
+                const data = res.data.map(u => ({
+                    tipo: u.tipo,
+                    numeroUbicacion: u.numeroUbicacion,
+                    subdivision: u.subdivision,
+                    numeroSubdivision: u.numeroSubdivision,
+                    categoria: u.categoria || 'Sin categoría',
+                    codigo: `${u.tipo}${u.numeroUbicacion}${u.subdivision || ''}${u.numeroSubdivision || ''}`,
+
+                }));
+
+                setUbicacionesPermitidas(data);
+
+            } catch (err) {
+                console.error("❌ Error al obtener ubicaciones permitidas", err);
+            }
+        };
+
+        fetchUbicacionesPermitidas();
+    }, [sucursalId]);
+
+    const tipos = [...new Set(ubicacionesPermitidas.map(u => u.tipo))];
+    const numeros = [...new Set(
+        ubicacionesPermitidas
+            .filter(u => u.tipo === tipoSeleccionado)
+            .map(u => u.numeroUbicacion)
+    )];
+    const subdivisiones = [...new Set(
+        ubicacionesPermitidas
+            .filter(u => u.tipo === tipoSeleccionado && u.numeroUbicacion === Number(numeroSeleccionado))
+            .map(u => `${u.subdivision || ''}${u.numeroSubdivision || ''}`)
+    )];
+
+
+
     const handleConfirmarUbicacion = (e) => {
         e.preventDefault();
-        if (!codigoUbicacion.trim()) return;
+        const codigo = `${tipoSeleccionado}${numeroSeleccionado}${subdivisionSeleccionada}`;
+        setCodigoUbicacion(codigo);
         setUbicacionConfirmada(true);
     };
-
-    const handleDescargarTxt = () => {
-        if (productosCargados.length === 0) return;
-        const contenido = productosCargados.map(p => `${p.codigo};`).join('\n');
-        const blob = new Blob([contenido], { type: 'text/plain;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `SA${sucursalId}_Ubic-${codigoUbicacion}.txt`;
-        a.click();
-        URL.revokeObjectURL(url);
-    };
-
     const handleAgregarProducto = async (e) => {
         e.preventDefault();
         if (!codigoUbicacion || !codigoBarras || cantidad < 1) return;
@@ -72,16 +98,17 @@ const HomeSucursal = () => {
                 return;
             }
 
+            // Descomponer ubicación correctamente
             const tipoUbicacion = codigoUbicacion.match(/^[A-Z]+/)[0];
             const resto = codigoUbicacion.replace(tipoUbicacion, '');
-            const numero = parseInt(resto.match(/\d+/)[0]);
-            const sub = resto.replace(numero, '') || null;
+
+            const numero = parseInt(resto.match(/^\d+/)[0]); // Número de ubicación
+            const subConNum = resto.replace(numero, ''); // Ej: "E2"
+            const letraSubdivision = subConNum[0]; // "E"
+            const numeroSubdivision = parseInt(subConNum.slice(1)); // 2
 
             const resCheck = await axios.get(`http://localhost:3000/ubicaciones/check`, {
-                params: {
-                    codebar: codigoBarras,
-                    sucursalId
-                }
+                params: { codebar: codigoBarras, sucursalId }
             });
 
             const yaEnOtraUbicacion = resCheck.data.find(p => p.ubicacion !== codigoUbicacion);
@@ -93,14 +120,17 @@ const HomeSucursal = () => {
                     cantidad,
                     tipo: tipoUbicacion,
                     numero,
-                    subdivision: sub
+                    subdivision: letraSubdivision,
+                    numeroSubdivision
                 });
                 setUbicacionAnterior(yaEnOtraUbicacion.ubicacion);
                 setMostrarModalDuplicado(true);
                 return;
             }
 
-            await crearProducto(producto, codigoBarras, cantidad, tipoUbicacion, numero, sub);
+            // Si no está duplicado, lo agregamos
+            await crearProducto(producto, codigoBarras, cantidad, tipoUbicacion, numero, letraSubdivision, numeroSubdivision);
+
         } catch (err) {
             console.error("❌ Error al asignar producto:", err);
         } finally {
@@ -112,19 +142,21 @@ const HomeSucursal = () => {
         }
     };
 
-    const crearProducto = async (producto, codigo, cantidad, tipo, numero, subdivision) => {
+
+    const crearProducto = async (producto, codigo, cantidad, tipo, numero, subdivision, numeroSubdivision) => {
         try {
             const res = await axios.post(`http://localhost:3000/ubicaciones`, {
                 codebar: codigo,
                 tipo,
                 numero,
                 subdivision,
+                numeroSubdivision,
                 cantidad,
                 sucursalId: parseInt(sucursalId)
             });
-
+    
             const nuevo = res.data;
-
+    
             setProductosCargados(prev => [
                 ...prev,
                 {
@@ -132,14 +164,52 @@ const HomeSucursal = () => {
                     nombre: producto.nombre || producto.Producto || 'Sin nombre',
                     codigo,
                     cantidad,
-                    ubicacion: codigoUbicacion
+                    ubicacion: `${tipo}${numero}${subdivision || ''}${numeroSubdivision || ''}`
                 }
             ]);
-
+    
             setCodigoBarras('');
             setCantidad(1);
         } catch (error) {
+            console.error("❌ Error al crear producto:", error);
             alert("Error al agregar producto");
+        }
+    };
+    
+
+
+    const handleActualizarCantidad = (id, nuevaCantidad) => {
+        setProductosCargados(prev =>
+            prev.map(p => p.id === id ? { ...p, cantidad: nuevaCantidad } : p)
+        );
+    };
+
+    const handleEliminarProducto = async (id) => {
+        try {
+            await axios.delete(`http://localhost:3000/ubicaciones/${id}`);
+            setProductosCargados(prev => prev.filter(p => p.id !== id));
+        } catch (err) {
+            console.error("❌ Error al eliminar producto", err);
+            alert("Error al eliminar el producto.");
+        }
+    };
+
+    const handleReubicarProducto = (id) => {
+        setProductosCargados(prev => prev.filter(p => p.id !== id));
+    };
+
+    const handleGuardarDesdeModal = async (id, nuevaCantidad) => {
+        try {
+            await axios.put(`http://localhost:3000/ubicaciones/${id}`, {
+                cantidad: parseInt(nuevaCantidad),
+                sucursalId: parseInt(sucursalId)
+            });
+
+            setMostrarModalCantidad(false);
+            setProductoExistente(null);
+            handleActualizarCantidad(id, nuevaCantidad);
+        } catch (err) {
+            console.error("❌ Error al actualizar cantidad desde modal:", err);
         }
     };
 
@@ -150,12 +220,8 @@ const HomeSucursal = () => {
 
         if (opcion === 'mover') {
             try {
-                // Eliminar anterior
                 const resCheck = await axios.get(`http://localhost:3000/ubicaciones/check`, {
-                    params: {
-                        codebar,
-                        sucursalId
-                    }
+                    params: { codebar, sucursalId }
                 });
 
                 const existente = resCheck.data.find(p => p.ubicacion !== codigoUbicacion);
@@ -172,75 +238,6 @@ const HomeSucursal = () => {
         setProductoDuplicado(null);
     };
 
-    const handleGuardarDesdeModal = async (id, nuevaCantidad) => {
-        try {
-            await axios.put(`http://localhost:3000/ubicaciones/${id}`, {
-                cantidad: parseInt(nuevaCantidad),
-                sucursalId: parseInt(sucursalId)
-            });
-
-            setMostrarModalCantidad(false);
-            setProductoExistente(null);
-            setProductosCargados(prev =>
-                prev.map(p => p.id === id ? { ...p, cantidad: nuevaCantidad } : p)
-            );
-        } catch (err) {
-            console.error("❌ Error al actualizar cantidad desde modal:", err);
-        }
-    };
-
-    const handleNuevaUbicacion = () => {
-        setCodigoUbicacion('');
-        setUbicacionConfirmada(false);
-        setProductosCargados([]);
-    };
-
-    const handleEliminarProducto = async (id) => {
-        try {
-            await axios.delete(`http://localhost:3000/ubicaciones/${id}`);
-            setProductosCargados(prev => prev.filter(p => p.id !== id));
-        } catch (err) {
-            console.error("❌ Error al eliminar producto", err);
-            alert("Error al eliminar el producto.");
-        }
-    };
-
-    const handleActualizarCantidad = (id, nuevaCantidad) => {
-        setProductosCargados(prev =>
-            prev.map(p => p.id === id ? { ...p, cantidad: nuevaCantidad } : p)
-        );
-    };
-
-    const handleReubicarProducto = (id) => {
-        setProductosCargados(prev => prev.filter(p => p.id !== id));
-    };
-
-    useEffect(() => {
-        const fetchProductosEnUbicacion = async () => {
-            if (ubicacionConfirmada && codigoUbicacion && sucursalId) {
-                setLoading(true);
-                try {
-                    const res = await axios.get(`http://localhost:3000/ubicaciones?sucursal=${sucursalId}&ubicacion=${codigoUbicacion}`);
-                    if (Array.isArray(res.data)) {
-                        const productos = res.data.map(p => ({
-                            id: p.id,
-                            nombre: p.producto?.nombre || 'Sin nombre',
-                            codigo: p.codebar,
-                            cantidad: p.cantidad,
-                            ubicacion: p.ubicacion
-                        }));
-                        setProductosCargados(productos);
-                    }
-                } catch (err) {
-                    console.error("Error al consultar productos ya cargados:", err);
-                } finally {
-                    setLoading(false);
-                }
-            }
-        };
-
-        fetchProductosEnUbicacion();
-    }, [ubicacionConfirmada, codigoUbicacion]);
 
     return (
         <div style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto' }}>
@@ -248,66 +245,99 @@ const HomeSucursal = () => {
 
             {!ubicacionConfirmada ? (
                 <form onSubmit={handleConfirmarUbicacion}>
-                    <label>📍 Escaneá o escribí el código de la ubicación:</label>
-                    <input
-                        type="text"
-                        value={codigoUbicacion}
-                        onChange={(e) => setCodigoUbicacion(e.target.value.toUpperCase())}
-                        placeholder="Ej: G1E3"
-                        required
-                        autoFocus
-                    />
-                    <button type="submit">✅ Confirmar Ubicación</button>
-                </form>
-            ) : (
-                <>
-                    <div style={{ marginBottom: '1rem' }}>
-                        <h3>📍 Ubicación actual: <span style={{ color: 'green' }}>{codigoUbicacion}</span></h3>
-                        <button onClick={handleNuevaUbicacion}>🔄 Cambiar ubicación</button>
+                    <div className="tipo-selector">
+                        <h4>Tipo de ubicación:</h4>
+                        {["M", "G", "P"].map((tipo) => (
+                            <button
+                                key={tipo}
+                                className={`tipo-btn ${tipoSeleccionado === tipo ? "activo" : ""}`}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setTipoSeleccionado(tipo);
+                                    setNumeroSeleccionado('');
+                                    setSubdivisionSeleccionada('');
+                                }}
+                            >
+                                {tipo === "M" ? "🧱 Módulo" : tipo === "G" ? "🛒 Góndola" : "📌 Puntera"}
+                            </button>
+                        ))}
                     </div>
 
-                    <button onClick={handleDescargarTxt} style={{ marginTop: '1rem' }}>
-                        📥 Descargar TXT con códigos
+                    {tipoSeleccionado && (
+                        <div className="numero-selector">
+                            <h4>Número:</h4>
+                            {[...new Set(numeros)].map((n) => (
+                                <button
+                                    key={n}
+                                    className={`numero-btn ${numeroSeleccionado === n ? "activo" : ""}`}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setNumeroSeleccionado(n);
+                                        setSubdivisionSeleccionada('');
+                                    }}
+                                >
+                                    {n}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    {numeroSeleccionado && (
+                        <div className="subdivision-selector">
+                            <h4>Estante / Fila:</h4>
+                            {[...new Set(subdivisiones)].map((s) => (
+                                <button
+                                    key={s}
+                                    className={`subdivision-btn ${subdivisionSeleccionada === s ? "activo" : ""}`}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setSubdivisionSeleccionada(s);
+                                    }}
+                                >
+                                    {s}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    {subdivisionSeleccionada && (
+                        <button type="submit" className="btn-confirmar-ubicacion">
+                            ✅ Confirmar Ubicación
+                        </button>
+                    )}
+                </form>
+            ) : (
+                <div>
+                    <h3>📍 Ubicación actual: <span style={{ color: 'green' }}>{codigoUbicacion}</span></h3>
+                    <button onClick={() => setUbicacionConfirmada(false)} style={{ marginBottom: '1rem' }}>
+                        🔄 Cambiar ubicación
                     </button>
 
-                    <form onSubmit={handleAgregarProducto} style={{ marginTop: '1.5rem' }}>
-                        <label>➕ Agregar otro producto:</label><br />
+                    <form onSubmit={handleAgregarProducto} style={{ marginBottom: '1rem' }}>
+                        <label>📦 Escaneá o escribí el código del producto:</label><br />
                         <input
                             type="text"
                             value={codigoBarras}
                             onChange={(e) => setCodigoBarras(e.target.value)}
                             placeholder="Código de barras"
                             required
+                            style={{ marginRight: '1rem' }}
                         />
                         <input
                             type="number"
                             value={cantidad}
-                            onChange={(e) => setCantidad(e.target.value)}
+                            onChange={(e) => setCantidad(parseInt(e.target.value))}
                             min="1"
                             required
+                            style={{ width: '60px', marginRight: '1rem' }}
                         />
-                        <button
-                            type="submit"
-                            disabled={
-                                !codigoBarras.trim() ||
-                                parseInt(cantidad) < 1 ||
-                                enProceso.has(codigoBarras)
-                            }
-                        >
-                            ➕ Agregar
-                        </button>
-
-                        {enProceso.has(codigoBarras) && (
-                            <div style={{ color: 'red', marginTop: '0.5rem' }}>
-                                🔴 El código seleccionado se está agregando
-                            </div>
-                        )}
+                        <button type="submit">➕ Agregar</button>
                     </form>
 
-                    {loading && <div style={{ marginTop: '0.5rem' }}>⏳ Cargando productos...</div>}
+                    {loading && <p>⏳ Cargando productos...</p>}
 
                     {!loading && productosCargados.length > 0 && (
-                        <ul>
+                        <ul style={{ padding: 0 }}>
                             {productosCargados.map((p) => (
                                 <ProductoEnUbicacion
                                     key={p.id}
@@ -321,8 +351,8 @@ const HomeSucursal = () => {
                     )}
 
                     {!loading && productosCargados.length === 0 && (
-                        <div style={{ backgroundColor: '#d1ecf1', padding: '10px', marginTop: '1rem', border: '1px solid #bee5eb' }}>
-                            ℹ️ No hay productos cargados en esta ubicación todavía.
+                        <div style={{ marginTop: '1rem', backgroundColor: '#e8f0fe', padding: '1rem', borderRadius: '5px' }}>
+                            ℹ️ No hay productos cargados aún en esta ubicación.
                         </div>
                     )}
 
@@ -345,7 +375,8 @@ const HomeSucursal = () => {
                             }}
                         />
                     )}
-                </>
+                </div>
+
             )}
         </div>
     );

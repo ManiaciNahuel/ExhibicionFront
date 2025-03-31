@@ -1,0 +1,63 @@
+.tipo-selector,
+.numero-selector,
+.subdivision-selector {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.tipo-selector h4,
+.numero-selector h4,
+.subdivision-selector h4 {
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #333;
+  width: 100%;
+  text-align: center;
+}
+
+.tipo-btn,
+.numero-btn,
+.subdivision-btn,
+.btn-confirmar-ubicacion {
+  background-color: #e3b505;
+  color: #1f1f1f;
+  border: none;
+  padding: 0.6rem 1.1rem;
+  margin: 0.3rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-weight: bold;
+}
+
+.tipo-btn:hover,
+.numero-btn:hover,
+.subdivision-btn:hover,
+.btn-confirmar-ubicacion:hover {
+  background-color: #f6511d;
+  color: #fff;
+}
+
+.tipo-btn.activo,
+.numero-btn.activo,
+.subdivision-btn.activo {
+  background-color: #f6511d;
+  color: #fff;
+  border: 2px solid #1f1f1f;
+}
+
+.btn-confirmar-ubicacion {
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.ubicacion-confirmada {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #fbfaf8;
+  border-left: 5px solid #f6511d;
+  border-radius: 5px;
+}
