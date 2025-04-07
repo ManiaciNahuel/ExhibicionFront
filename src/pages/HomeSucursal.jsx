@@ -40,7 +40,7 @@ const HomeSucursal = () => {
     const fetchProductosEnUbicacion = async () => {
         console.log("🔍 Fetching productos para:", { sucursalId, codigoUbicacion });
         try {
-            const res = await axios.get(`exhibicionback-production.up.railway.app/ubicaciones`, {
+            const res = await axios.get(`https://exhibicionback-production.up.railway.app/ubicaciones`, {
                 params: {
                     sucursal: sucursalId,
                     ubicacion: codigoUbicacion
@@ -56,7 +56,7 @@ const HomeSucursal = () => {
     useEffect(() => {
         const fetchUbicacionesPermitidas = async () => {
             try {
-                const res = await axios.get(`exhibicionback-production.up.railway.app/ubicaciones/permitidas?sucursalId=${sucursalId}`);
+                const res = await axios.get(`https://exhibicionback-production.up.railway.app/ubicaciones/permitidas?sucursalId=${sucursalId}`);
                 const data = res.data.map(u => ({
                     tipo: u.tipo,
                     numeroUbicacion: u.numeroUbicacion,
@@ -99,7 +99,7 @@ const HomeSucursal = () => {
         setLoading(true); // ⏳ Empezamos a cargar
 
         try {
-            const res = await axios.get(`exhibicionback-production.up.railway.app/ubicaciones`, {
+            const res = await axios.get(`https://exhibicionback-production.up.railway.app/ubicaciones`, {
                 params: {
                     sucursal: sucursalId,
                     ubicacion: codigo
@@ -145,7 +145,7 @@ const HomeSucursal = () => {
         try {
             setProductosCargando(prev => new Set(prev).add(codigoBarras));
 
-            const res = await axios.get(`exhibicionback-production.up.railway.app/productos/${codigoBarras}`);
+            const res = await axios.get(`https://exhibicionback-production.up.railway.app/productos/${codigoBarras}`);
             const producto = res.data;
             if (!producto) {
                 alert('Producto no encontrado');
@@ -177,7 +177,7 @@ const HomeSucursal = () => {
             const numSub = parseInt(resto.slice(1));
             const numeroSubdivision = Number.isNaN(numSub) ? null : numSub;
 
-            const resCheck = await axios.get(`exhibicionback-production.up.railway.app/ubicaciones/check`, {
+            const resCheck = await axios.get(`https://exhibicionback-production.up.railway.app/ubicaciones/check`, {
                 params: { codebar: codigoBarras, sucursalId }
             });
 
@@ -234,7 +234,7 @@ const HomeSucursal = () => {
 
     const crearProducto = async (producto, codigo, cantidad, tipo, numero, subdivision, numeroSubdivision, division, numeroDivision) => {
         try {
-            const res = await axios.post(`exhibicionback-production.up.railway.app/ubicaciones`, {
+            const res = await axios.post(`https://exhibicionback-production.up.railway.app/ubicaciones`, {
                 codebar: codigo,
                 tipo,
                 numero,
@@ -278,7 +278,7 @@ const HomeSucursal = () => {
 
     const handleEliminarProducto = async (id) => {
         try {
-            await axios.delete(`exhibicionback-production.up.railway.app/ubicaciones/${id}`);
+            await axios.delete(`https://exhibicionback-production.up.railway.app/ubicaciones/${id}`);
             setProductosCargados(prev => prev.filter(p => p.id !== id));
         } catch (err) {
             console.error("❌ Error al eliminar producto", err);
@@ -292,7 +292,7 @@ const HomeSucursal = () => {
 
     const handleGuardarDesdeModal = async (id, nuevaCantidad) => {
         try {
-            await axios.put(`exhibicionback-production.up.railway.app/ubicaciones/${id}`, {
+            await axios.put(`https://exhibicionback-production.up.railway.app/ubicaciones/${id}`, {
                 cantidad: parseInt(nuevaCantidad),
                 sucursalId: parseInt(sucursalId)
             });
@@ -321,13 +321,13 @@ const HomeSucursal = () => {
 
         if (opcion === 'mover') {
             try {
-                const resCheck = await axios.get(`exhibicionback-production.up.railway.app/ubicaciones/check`, {
+                const resCheck = await axios.get(`https://exhibicionback-production.up.railway.app/ubicaciones/check`, {
                     params: { codebar, sucursalId }
                 });
 
                 const existente = resCheck.data.find(p => p.ubicacion !== codigoUbicacion);
                 if (existente?.id) {
-                    await axios.delete(`exhibicionback-production.up.railway.app/ubicaciones/${existente.id}`);
+                    await axios.delete(`https://exhibicionback-production.up.railway.app/ubicaciones/${existente.id}`);
                 }
             } catch (err) {
                 console.error("❌ Error al eliminar ubicación anterior:", err);

@@ -20,7 +20,7 @@ const VerUbicaciones = () => {
     const fetchUbicaciones = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`exhibicionback-production.up.railway.app/ubicaciones/todas?sucursalId=${sucursalId}`);
+        const res = await axios.get(`https://exhibicionback-production.up.railway.app/ubicaciones/todas?sucursalId=${sucursalId}`);
         const data = res.data.map(u => ({
           ...u,
           productos: u.productos.map(p => ({
@@ -79,7 +79,7 @@ const VerUbicaciones = () => {
 
   const handleEliminarProducto = async (id) => {
     try {
-      await axios.delete(`exhibicionback-production.up.railway.app/ubicaciones/${id}`);
+      await axios.delete(`https://exhibicionback-production.up.railway.app/ubicaciones/${id}`);
       const nuevasUbicaciones = ubicaciones.map(u => ({
         ...u,
         productos: u.productos.filter(p => p.id !== id)
@@ -93,7 +93,7 @@ const VerUbicaciones = () => {
 
   const handleGuardarDesdeModal = async (id, nuevaCantidad) => {
     try {
-      await axios.put(`exhibicionback-production.up.railway.app/ubicaciones/${id}`, {
+      await axios.put(`https://exhibicionback-production.up.railway.app/ubicaciones/${id}`, {
         cantidad: parseInt(nuevaCantidad),
         sucursalId: parseInt(sucursalId)
       });

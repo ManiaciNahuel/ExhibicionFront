@@ -16,7 +16,7 @@ const ConfirmarAccionModal = ({ onConfirm, onCancel, cantidad }) => {
   useEffect(() => {
     const fetchUbicaciones = async () => {
       try {
-        const res = await axios.get(`exhibicionback-production.up.railway.app/ubicaciones/permitidas?sucursalId=${sucursalId}`);
+        const res = await axios.get(`https://exhibicionback-production.up.railway.app/ubicaciones/permitidas?sucursalId=${sucursalId}`);
         const data = res.data.map(u => ({
           tipo: u.tipo,
           numeroUbicacion: u.numeroUbicacion,
