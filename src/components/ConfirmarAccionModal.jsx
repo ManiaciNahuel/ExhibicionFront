@@ -7,6 +7,9 @@ const ConfirmarAccionModal = ({ onConfirm, onCancel, cantidad }) => {
   const [tipoSeleccionado, setTipoSeleccionado] = useState('');
   const [numeroSeleccionado, setNumeroSeleccionado] = useState('');
   const [subdivisionSeleccionada, setSubdivisionSeleccionada] = useState('');
+  const [division, setDivision] = useState('');
+  const [numeroDivision, setNumeroDivision] = useState('');
+
 
   const sucursalId = localStorage.getItem('sucursalId');
 
@@ -17,10 +20,13 @@ const ConfirmarAccionModal = ({ onConfirm, onCancel, cantidad }) => {
         const data = res.data.map(u => ({
           tipo: u.tipo,
           numeroUbicacion: u.numeroUbicacion,
+          division: u.division,
+          numeroDivision: u.numeroDivision,
           subdivision: u.subdivision,
           numeroSubdivision: u.numeroSubdivision,
-          codigo: `${u.tipo}${u.numeroUbicacion}${u.subdivision || ''}${u.numeroSubdivision || ''}`
+          codigo: `${u.tipo}${u.numeroUbicacion}${u.division || ''}${u.numeroDivision || ''}${u.subdivision || ''}${u.numeroSubdivision || ''}`
         }));
+
         setUbicacionesPermitidas(data);
       } catch (err) {
         console.error("❌ Error al obtener ubicaciones permitidas en modal:", err);
@@ -44,7 +50,7 @@ const ConfirmarAccionModal = ({ onConfirm, onCancel, cantidad }) => {
 
   const handleConfirmarUbicacion = (e) => {
     e.preventDefault();
-    const codigo = `${tipoSeleccionado}${numeroSeleccionado}${subdivisionSeleccionada}`;
+    const codigo = `${tipoSeleccionado}${numeroSeleccionado}${division || ''}${numeroDivision || ''}${subdivisionSeleccionada}`;
     onConfirm(codigo); // Esto lo recibe ProductoEnUbicacion
   };
 
@@ -70,12 +76,17 @@ const ConfirmarAccionModal = ({ onConfirm, onCancel, cantidad }) => {
         setTipoSeleccionado={setTipoSeleccionado}
         numeroSeleccionado={numeroSeleccionado}
         setNumeroSeleccionado={setNumeroSeleccionado}
+        division={division}
+        setDivision={setDivision}
+        numeroDivision={numeroDivision}
+        setNumeroDivision={setNumeroDivision}
         subdivisionSeleccionada={subdivisionSeleccionada}
         setSubdivisionSeleccionada={setSubdivisionSeleccionada}
         numeros={numeros}
         subdivisiones={subdivisiones}
         handleConfirmarUbicacion={handleConfirmarUbicacion}
       />
+
 
       <div style={{ marginTop: '1rem' }}>
         <button onClick={onCancel}>❌ Cancelar</button>

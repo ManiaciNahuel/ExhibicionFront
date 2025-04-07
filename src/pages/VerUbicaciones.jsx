@@ -25,7 +25,7 @@ const VerUbicaciones = () => {
           ...u,
           productos: u.productos.map(p => ({
             id: p.ProductoUbicacion?.id || p.id,
-            nombre: p.nombre || p.Producto || 'Sin nombre',
+            nombre: p.producto?.nombre || p.Producto || 'Sin nombre',
             codigo: p.codebar,
             cantidad: p.cantidad,
             ubicacion: u.ubicacion

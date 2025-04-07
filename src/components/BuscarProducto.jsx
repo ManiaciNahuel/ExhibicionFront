@@ -100,7 +100,7 @@ const BuscarProducto = () => {
         <div style={{ marginTop: '2rem' }}>
           {resultado.producto ? (
             <>
-              <h3>Producto: {resultado.producto.Producto}</h3>
+              <h3>Producto: {`${resultado.producto.Producto || ''} ${resultado.producto.Presentaci || ''}`.trim()}</h3>
               <h4>Ubicaciones encontradas:</h4>
               <div>
                 {resultado.ubicaciones.map((p, idx) => (

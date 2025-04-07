@@ -37,54 +37,69 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
         setMoviendo(true);
         try {
             const tipo = nuevaUbicacion.match(/^[A-Z]+/)[0];
-            const resto = nuevaUbicacion.replace(tipo, '');
+            let resto = nuevaUbicacion.replace(tipo, '');
+    
             const numero = parseInt(resto.match(/^\d+/)[0]);
-            const subConNum = resto.replace(numero, ''); // ej: "E2"
-            const subdivision = subConNum[0] || null;
-
-            const tempNumSub = parseInt(subConNum.slice(1));
+            resto = resto.replace(numero, '');
+    
+            // 🧩 Extraer división y número de división (solo para góndolas)
+            let division = null;
+            let numeroDivision = null;
+    
+            if (tipo === 'G') {
+                division = resto[0]; // 'P' o 'L'
+                resto = resto.slice(1);
+                numeroDivision = parseInt(resto[0]); // 1 o 2
+                resto = resto.slice(1);
+            }
+    
+            const subdivision = resto[0] || null;
+            const tempNumSub = parseInt(resto.slice(1));
             const numeroSubdivision = Number.isNaN(tempNumSub) ? null : tempNumSub;
-
-
-
+    
             const sucursalId = parseInt(localStorage.getItem('sucursalId'));
+    
             console.log("📦 Reubicando con datos:", {
                 codebar: producto.codigo,
                 tipo,
                 numero,
+                division,
+                numeroDivision,
                 subdivision,
                 numeroSubdivision,
                 cantidad: producto.cantidad,
                 sucursalId
             });
-
+    
             const check = await axios.get(`http://localhost:3000/ubicaciones?sucursal=${sucursalId}&ubicacion=${nuevaUbicacion}`);
             const yaExiste = check.data.find(p => p.codebar === producto.codigo);
-
+    
             if (yaExiste) {
                 console.log("🗑 Eliminando producto con ID:", producto.id);
-
+    
                 alert(`⚠️ El producto "${producto.nombre}" ya existe en la ubicación "${nuevaUbicacion}". 
-Si desea editar las cantidades, diríjase a esa ubicación. De todos modos, queda eliminado el producto de esta ubicación.`);
+    Si desea editar las cantidades, diríjase a esa ubicación. De todos modos, queda eliminado el producto de esta ubicación.`);
                 await axios.delete(`http://localhost:3000/ubicaciones/${producto.id}`);
                 onReubicar(producto.id);
                 setMostrarModal(false);
                 return;
             }
-
-            // Crear en nueva ubicación
+    
+            // ✅ Crear en nueva ubicación
             const res = await axios.post('http://localhost:3000/ubicaciones', {
                 codebar: producto.codebar || producto.codigo,
                 tipo,
                 numero,
+                division,
+                numeroDivision,
                 subdivision,
                 numeroSubdivision,
                 cantidad: producto.cantidad,
                 sucursalId
             });
-
-
-            const nuevaUbic = `${tipo}${numero}${subdivision || ''}${numeroSubdivision || ''}`;
+    
+            const nuevaUbic = `${tipo}${numero}${division || ''}${numeroDivision || ''}${subdivision || ''}${numeroSubdivision || ''}`;
+    
             const nuevoProducto = {
                 id: res.data.id,
                 nombre: producto.nombre,
@@ -92,12 +107,12 @@ Si desea editar las cantidades, diríjase a esa ubicación. De todos modos, qued
                 cantidad: producto.cantidad,
                 ubicacion: nuevaUbic
             };
+    
             console.log("🗑 Eliminando producto con ID:", producto.id);
-
             await axios.delete(`http://localhost:3000/ubicaciones/${producto.id}`);
             onReubicar(producto.id, nuevoProducto, nuevaUbic);
             onAgregarUbicacionSiFalta?.(nuevoProducto);
-
+    
             setMostrarModal(false);
         } catch (err) {
             console.error("❌ Error al reubicar:", err);
@@ -106,10 +121,11 @@ Si desea editar las cantidades, diríjase a esa ubicación. De todos modos, qued
             setMoviendo(false);
         }
     };
+    
 
     return (
         <div style={{ marginBottom: '0.5rem', padding: '0.5rem', border: '1px solid #ccc' }}>
-            <strong>{producto.nombre || producto.producto?.nombre || "Sin nombre"}</strong> ({producto.codigo || producto.codebar})<br />
+            <strong>{`${producto.Producto || producto.nombre || ''} ${producto.Presentaci || ''}`.trim() || 'Sin nombre'}</strong> ({producto.codigo || producto.codebar})<br />
             Cantidad:{" "}
             {modoEdicion ? (
                 <input

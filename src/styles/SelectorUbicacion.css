@@ -1,7 +1,7 @@
 .tipo-selector,
 .numero-selector,
 .subdivision-selector {
-  margin-bottom: 2rem;
+  margin-bottom: 0.2rem;
   text-align: center;
   max-height: 90vh;
 }
@@ -10,15 +10,15 @@
 .numero-selector h4,
 .subdivision-selector h4 {
   font-weight: bold;
-  margin-bottom: 0.8rem;
+  margin: 0.1rem;
   color: #333;
 }
 
 .tipo-btn,
 .numero-btn,
 .subdivision-btn {
-  padding: 0.75rem 1.25rem;
-  margin: 0.4rem;
+  padding: 0.55rem 0.75rem;
+  margin: 0.2rem;
   background-color: white;
   border: 2px solid #ccc;
   border-radius: 8px;
@@ -59,4 +59,39 @@
 
 .btn-confirmar-ubicacion:hover {
   background-color: #00703d;
+}
+.division-selector {
+  margin-bottom: 2rem;
+  text-align: center;
+  max-height: 90vh;
+}
+
+.division-selector h4 {
+  font-weight: bold;
+  margin-bottom: 0.8rem;
+  color: #333;
+}
+
+.division-btn {
+  font-weight: bold;
+  padding: 0.55rem 0.75rem;
+  margin: 0.2rem;
+  background-color: white;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.division-btn:hover {
+  background-color: #e3b505;
+  color: white;
+  border-color: #c49c04;
+}
+
+.division-btn.activo {
+  background-color: #f6511d;
+  color: white;
+  border: 2px solid #1f1f1f;
 }
