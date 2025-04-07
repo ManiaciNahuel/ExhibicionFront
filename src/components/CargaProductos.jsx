@@ -77,7 +77,7 @@ const CargaProductos = ({
           facingMode: "environment",
           width: { ideal: 1280 },
           height: { ideal: 720 },
-          advanced: [{ zoom: 2 }] 
+          advanced: [{ zoom: 5 }] 
         }
       }
     ).catch((err) => {
