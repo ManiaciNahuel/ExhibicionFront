@@ -372,7 +372,7 @@ const HomeSucursal = () => {
             )}
 
             <div style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto' }}>
-                <h2>📦 Carga de Productos por Ubicación 1</h2>
+                <h2>📦 Carga de Productos por Ubicación</h2>
 
                 {!ubicacionConfirmada ? (
                     <SelectorUbicacion

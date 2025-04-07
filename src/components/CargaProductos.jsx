@@ -50,38 +50,45 @@ const CargaProductos = ({
     URL.revokeObjectURL(url);
   };
 
-  const codeReaderRef = useRef(null); // fuera del useEffect
+  const videoRef = useRef(null);
+
 
   useEffect(() => {
     if (!codigoUbicacion) return;
 
-    const videoElement = document.getElementById("zxing-scanner");
-    setEstadoScanner("🎥 Iniciando cámara...");
+    const codeReader = new BrowserMultiFormatReader();
 
-    codeReaderRef.current = new BrowserMultiFormatReader();
+    setEstadoScanner('🎥 Iniciando cámara...');
 
-    codeReaderRef.current.decodeFromVideoDevice(null, videoElement, (result, err) => {
-      if (result) {
-        const texto = result.getText();
-        console.log(`✅ Código detectado: ${texto}`);
-        setCodigoBarras(texto);
-        setEstadoScanner(`✅ Código detectado: ${texto}`);
-
-        // Esto detiene la cámara cuando se detecta uno
-        codeReaderRef.current.reset();
+    codeReader.decodeFromVideoDevice(
+      null,
+      videoRef.current,
+      (result, err) => {
+        if (result) {
+          const texto = result.getText();
+          console.log(`✅ Código detectado: ${texto}`);
+          setCodigoBarras(texto);
+          setEstadoScanner(`✅ Código detectado: ${texto}`);
+          codeReader.reset(); // para frenar la lectura
+        }
+      },
+      {
+        video: {
+          facingMode: "environment",
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
       }
-    }).catch((err) => {
+    ).catch((err) => {
       console.error("❌ Error al iniciar escáner:", err);
-      setEstadoScanner("❌ Error iniciando escáner");
+      setEstadoScanner('❌ Error al iniciar cámara');
     });
 
     return () => {
-      if (codeReaderRef.current) {
-        try {
-          codeReaderRef.current.reset();
-        } catch (error) {
-          console.warn("⚠️ Error al detener el escáner:", error.message);
-        }
+      try {
+        codeReader.reset();
+      } catch (err) {
+        console.warn("⚠️ Error al detener el escáner:", err.message);
       }
     };
   }, [codigoUbicacion]);
@@ -104,17 +111,31 @@ const CargaProductos = ({
         {codigoUbicacion && (
           <>
             <p style={{ fontStyle: 'italic', margin: '0.5rem 0' }}>{estadoScanner}</p>
-            <video
-              id="zxing-scanner"
-              style={{
-                width: "100%",
-                height: "220px",
-                marginBottom: "1rem",
-                border: "1px solid #ccc",
-                borderRadius: "8px",
-                overflow: "hidden"
-              }}
-            ></video>
+            <div style={{ position: 'relative', width: '100%', maxWidth: '640px', margin: '0 auto' }}>
+              <video
+                ref={videoRef}
+                id="zxing-scanner"
+                style={{
+                  width: "100%",
+                  aspectRatio: "16/9",
+                  border: "1px solid #ccc",
+                  borderRadius: "8px",
+                  marginBottom: "1rem"
+                }}
+              />
+              {/* Overlay guía visual */}
+              <div style={{
+                position: "absolute",
+                border: "2px dashed #00ff00",
+                top: "25%",
+                left: "20%",
+                width: "60%",
+                height: "50%",
+                pointerEvents: "none",
+                zIndex: 10
+              }} />
+            </div>
+
 
             {codigoBarras && (
               <div style={{ marginBottom: '1rem', color: 'green' }}>
