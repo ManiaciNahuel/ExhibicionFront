@@ -52,6 +52,11 @@ const CargaProductos = ({
 
   const videoRef = useRef(null);
 
+  const [zoomActivo, setZoomActivo] = useState(true);
+
+  const toggleZoom = () => {
+    setZoomActivo(prev => !prev);
+  };
 
   useEffect(() => {
     if (!codigoUbicacion) return;
@@ -77,7 +82,7 @@ const CargaProductos = ({
           facingMode: "environment",
           width: { ideal: 1280 },
           height: { ideal: 720 },
-          advanced: [{ zoom: 5 }] 
+          advanced: [{ zoom: 2 }]
         }
       }
     ).catch((err) => {
@@ -113,28 +118,44 @@ const CargaProductos = ({
           <>
             <p style={{ fontStyle: 'italic', margin: '0.5rem 0' }}>{estadoScanner}</p>
             <div style={{ position: 'relative', width: '100%', maxWidth: '640px', margin: '0 auto' }}>
-              <video
-                ref={videoRef}
-                id="zxing-scanner"
+              <div
                 style={{
                   width: "100%",
-                  aspectRatio: "16/9",
+                  height: "240px",
+                  marginBottom: "1rem",
                   border: "1px solid #ccc",
                   borderRadius: "8px",
-                  marginBottom: "1rem"
+                  overflow: "hidden",
+                  position: "relative",
                 }}
-              />
-              {/* Overlay guía visual */}
-              <div style={{
-                position: "absolute",
-                border: "2px dashed #00ff00",
-                top: "25%",
-                left: "20%",
-                width: "60%",
-                height: "50%",
-                pointerEvents: "none",
-                zIndex: 10
-              }} />
+              >
+                <video
+                  ref={videoRef}
+                  id="zxing-scanner"
+                  style={{
+                    width: "100%",
+                    height: "240px",
+                    marginBottom: "1rem",
+                    border: "1px solid #ccc",
+                    borderRadius: "8px",
+                    overflow: "hidden",
+                    objectFit: "cover",
+                    transform: zoomActivo ? "scale(2.2)" : "scale(1)",
+                    transformOrigin: "center"
+                  }}
+                />
+                {/* Overlay guía visual */}
+                <div style={{
+                  position: "absolute",
+                  border: "2px dashed #00ff00",
+                  top: "25%",
+                  left: "20%",
+                  width: "60%",
+                  height: "50%",
+                  pointerEvents: "none",
+                  zIndex: 10
+                }} />
+              </div>
             </div>
 
 
