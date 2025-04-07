@@ -2,9 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import ProductoEnUbicacion from './ProductoEnUbicacion';
 import ModalEditarCantidad from './ModalEditarCantidad';
 import ModalProductoEnOtraUbicacion from './ModalProductoEnOtraUbicacion';
-import { BrowserMultiFormatReader, NotFoundException } from '@zxing/browser';
-
-
 
 const CargaProductos = ({
   codigoUbicacion,
@@ -31,7 +28,15 @@ const CargaProductos = ({
   setProductoDuplicado,
   crearProducto
 }) => {
-  const [estadoScanner, setEstadoScanner] = useState('');
+  const inputCodigoRef = useRef(null);
+  const inputCantidadRef = useRef(null);
+  const [cargando, setCargando] = useState(false);
+
+  useEffect(() => {
+    if (inputCodigoRef.current) {
+      inputCodigoRef.current.focus();
+    }
+  }, []);
 
   const handleDescargarTxt = () => {
     if (!productosCargados || productosCargados.length === 0) {
@@ -50,56 +55,34 @@ const CargaProductos = ({
     URL.revokeObjectURL(url);
   };
 
-  const videoRef = useRef(null);
-
-  const [zoomActivo, setZoomActivo] = useState(true);
-
-  const toggleZoom = () => {
-    setZoomActivo(prev => !prev);
+  const handleCodigoChange = (e) => {
+    setCodigoBarras(e.target.value);
   };
 
-  useEffect(() => {
-    if (!codigoUbicacion) return;
+  const handleCodigoKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      inputCantidadRef.current?.focus();
+    }
+  };
 
-    const codeReader = new BrowserMultiFormatReader();
+  const handleCantidadKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAgregarProductoWrapper(e);
+    }
+  };
 
-    setEstadoScanner('🎥 Iniciando cámara...');
-
-    codeReader.decodeFromVideoDevice(
-      null,
-      videoRef.current,
-      (result, err) => {
-        if (result) {
-          const texto = result.getText();
-          console.log(`✅ Código detectado: ${texto}`);
-          setCodigoBarras(texto);
-          setEstadoScanner(`✅ Código detectado: ${texto}`);
-          codeReader.reset(); // para frenar la lectura
-        }
-      },
-      {
-        video: {
-          facingMode: "environment",
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-          advanced: [{ zoom: 2 }]
-        }
-      }
-    ).catch((err) => {
-      console.error("❌ Error al iniciar escáner:", err);
-      setEstadoScanner('❌ Error al iniciar cámara');
-    });
-
-    return () => {
-      try {
-        codeReader.reset();
-      } catch (err) {
-        console.warn("⚠️ Error al detener el escáner:", err.message);
-      }
-    };
-  }, [codigoUbicacion]);
-
-
+  const handleAgregarProductoWrapper = async (e) => {
+    e.preventDefault();
+    setCargando(true);
+    await handleAgregarProducto(e); // Esta viene como prop desde el padre
+    setCargando(false);
+    setCodigoBarras('');
+    setCantidad(1);
+    inputCodigoRef.current?.focus();
+  };
+  
 
   return (
     <div>
@@ -111,66 +94,16 @@ const CargaProductos = ({
         📥 Descargar TXT
       </button>
 
-      <form onSubmit={handleAgregarProducto} style={{ marginBottom: '1rem' }}>
+      <form onSubmit={handleAgregarProductoWrapper} style={{ marginBottom: '1rem' }}>
+
         <label>📦 Escaneá o escribí el código del producto:</label><br />
-
-        {codigoUbicacion && (
-          <>
-            <p style={{ fontStyle: 'italic', margin: '0.5rem 0' }}>{estadoScanner}</p>
-            <div style={{ position: 'relative', width: '100%', maxWidth: '640px', margin: '0 auto' }}>
-              <div
-                style={{
-                  width: "100%",
-                  height: "240px",
-                  marginBottom: "1rem",
-                  border: "1px solid #ccc",
-                  borderRadius: "8px",
-                  overflow: "hidden",
-                  position: "relative",
-                }}
-              >
-                <video
-                  ref={videoRef}
-                  id="zxing-scanner"
-                  style={{
-                    width: "100%",
-                    height: "240px",
-                    marginBottom: "1rem",
-                    border: "1px solid #ccc",
-                    borderRadius: "8px",
-                    overflow: "hidden",
-                    objectFit: "cover",
-                    transform: zoomActivo ? "scale(2.2)" : "scale(1)",
-                    transformOrigin: "center"
-                  }}
-                />
-                {/* Overlay guía visual */}
-                <div style={{
-                  position: "absolute",
-                  border: "2px dashed #00ff00",
-                  top: "25%",
-                  left: "20%",
-                  width: "60%",
-                  height: "50%",
-                  pointerEvents: "none",
-                  zIndex: 10
-                }} />
-              </div>
-            </div>
-
-
-            {codigoBarras && (
-              <div style={{ marginBottom: '1rem', color: 'green' }}>
-                ✅ Último código detectado: <strong>{codigoBarras}</strong>
-              </div>
-            )}
-          </>
-        )}
 
         <input
           type="text"
           value={codigoBarras}
-          onChange={(e) => setCodigoBarras(e.target.value)}
+          ref={inputCodigoRef}
+          onChange={handleCodigoChange}
+          onKeyDown={handleCodigoKeyPress}
           placeholder="Código de barras"
           required
           style={{ marginRight: '1rem' }}
@@ -178,12 +111,20 @@ const CargaProductos = ({
         <input
           type="number"
           value={cantidad}
+          ref={inputCantidadRef}
           onChange={(e) => setCantidad(parseInt(e.target.value))}
+          onKeyDown={handleCantidadKeyPress}
           min="1"
           required
           style={{ width: '60px', marginRight: '1rem' }}
         />
         <button type="submit">➕ Agregar</button>
+        {cargando && (
+          <p style={{ color: 'blue', fontStyle: 'italic', marginTop: '0.5rem' }}>
+            ⏳ Agregando producto...
+          </p>
+        )}
+
       </form>
 
       {loading && <p>⏳ Cargando productos...</p>}
