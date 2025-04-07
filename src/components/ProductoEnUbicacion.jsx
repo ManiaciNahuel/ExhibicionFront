@@ -21,7 +21,7 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
 
     const handleGuardar = async () => {
         try {
-            await axios.put(`http://localhost:3000/ubicaciones/${producto.id}`, {
+            await axios.put(`exhibicionback-production.up.railway.app/ubicaciones/${producto.id}`, {
                 cantidad: parseInt(cantidadEditada),
                 sucursalId: parseInt(localStorage.getItem('sucursalId'))
             });
@@ -71,7 +71,7 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
                 sucursalId
             });
     
-            const check = await axios.get(`http://localhost:3000/ubicaciones?sucursal=${sucursalId}&ubicacion=${nuevaUbicacion}`);
+            const check = await axios.get(`exhibicionback-production.up.railway.app/ubicaciones?sucursal=${sucursalId}&ubicacion=${nuevaUbicacion}`);
             const yaExiste = check.data.find(p => p.codebar === producto.codigo);
     
             if (yaExiste) {
@@ -79,14 +79,14 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
     
                 alert(`⚠️ El producto "${producto.nombre}" ya existe en la ubicación "${nuevaUbicacion}". 
     Si desea editar las cantidades, diríjase a esa ubicación. De todos modos, queda eliminado el producto de esta ubicación.`);
-                await axios.delete(`http://localhost:3000/ubicaciones/${producto.id}`);
+                await axios.delete(`exhibicionback-production.up.railway.app/ubicaciones/${producto.id}`);
                 onReubicar(producto.id);
                 setMostrarModal(false);
                 return;
             }
     
             // ✅ Crear en nueva ubicación
-            const res = await axios.post('http://localhost:3000/ubicaciones', {
+            const res = await axios.post('exhibicionback-production.up.railway.app/ubicaciones', {
                 codebar: producto.codebar || producto.codigo,
                 tipo,
                 numero,
@@ -109,7 +109,7 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
             };
     
             console.log("🗑 Eliminando producto con ID:", producto.id);
-            await axios.delete(`http://localhost:3000/ubicaciones/${producto.id}`);
+            await axios.delete(`exhibicionback-production.up.railway.app/ubicaciones/${producto.id}`);
             onReubicar(producto.id, nuevoProducto, nuevaUbic);
             onAgregarUbicacionSiFalta?.(nuevoProducto);
     

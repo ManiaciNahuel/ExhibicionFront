@@ -18,7 +18,7 @@ const BuscarProducto = () => {
       const sucursalId = localStorage.getItem('sucursalId');
 
       const ubicacionesRes = await fetch(
-        `http://localhost:3000/ubicaciones/producto/${codigoBarras}?sucursalId=${sucursalId}`
+        `exhibicionback-production.up.railway.app/ubicaciones/producto/${codigoBarras}?sucursalId=${sucursalId}`
       );
       const ubicacionesData = await ubicacionesRes.json();
 
@@ -27,7 +27,7 @@ const BuscarProducto = () => {
         return;
       }
 
-      const productoRes = await fetch(`http://localhost:3000/productos/${codigoBarras}`);
+      const productoRes = await fetch(`exhibicionback-production.up.railway.app/productos/${codigoBarras}`);
       const producto = await productoRes.json();
 
       const ubicacionesTransformadas = ubicacionesData.map((ubic) => ({
@@ -57,7 +57,7 @@ const BuscarProducto = () => {
 
   const handleEliminarProducto = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/ubicaciones/${id}`);
+      await axios.delete(`exhibicionback-production.up.railway.app/ubicaciones/${id}`);
       // 🔁 Refrescamos la lista luego de eliminar
       buscarUbicaciones();
     } catch (err) {

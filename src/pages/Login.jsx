@@ -16,7 +16,7 @@ const Login = ({ onLoginSuccess }) => {
 
     setCargando(true);
     try {
-      const res = await axios.post('http://localhost:3000/auth/login', {
+      const res = await axios.post('exhibicionback-production.up.railway.app/auth/login', {
         email,
         password,
       });
