@@ -126,7 +126,7 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
     return (
         <div style={{ marginBottom: '0.5rem', padding: '0.5rem', border: '1px solid #ccc' }}>
             <strong>
-                {producto.producto?.nombre || '🛑 Sin nombre'}
+                {producto.producto?.nombre || '🛑 Cargando nombre'}
                 {producto.producto?.presentacion ? ` - ${producto.producto.presentacion}` : ''}
             </strong>
 
