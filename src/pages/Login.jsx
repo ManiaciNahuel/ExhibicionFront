@@ -3,6 +3,7 @@ import axios from 'axios';
 import '../styles/Login.css';
 import logo from '../assets/Logo blanco_Mesa de trabajo 1 copia.png';
 import { useNavigate } from 'react-router-dom';
+const API_URL = process.env.REACT_APP_API_URL
 
 const Login = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ const Login = ({ onLoginSuccess }) => {
 
     setCargando(true);
     try {
-      const res = await axios.post('exhibicionback-production.up.railway.app/auth/login', {
+      const res = await axios.post(`${API_URL}/auth/login`, {
         email,
         password,
       });
