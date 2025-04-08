@@ -12,13 +12,9 @@
 .planograma-img {
   max-width: 100%;
   height: auto;
-  cursor: zoom-in;
   transition: transform 0.3s ease;
 }
 
-.planograma-img:hover {
-  transform: scale(1.5);
-}
 
 
 .planograma-placeholder {

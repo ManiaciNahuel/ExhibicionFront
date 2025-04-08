@@ -8,6 +8,21 @@
   justify-content: center;
 }
 
+.boton-centrado {
+  display: block;
+  margin: 1rem auto; /* Centrado horizontal */
+  padding: 0.6rem 1.1rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #e3b505;
+  color: #1f1f1f;
+  border: none;
+  transition: background-color 0.2s ease;
+  font-weight: bold;
+}
+
+
 .tipo-selector h4,
 .numero-selector h4,
 .subdivision-selector h4 {
@@ -22,9 +37,9 @@
 .numero-btn,
 .subdivision-btn,
 .btn-confirmar-ubicacion {
-  background-color: #e3b505;
+  background-color: #f7f7f75b;
   color: #1f1f1f;
-  border: none;
+  border: 2px solid #1f1f1f;
   padding: 0.6rem 1.1rem;
   margin: 0.3rem;
   border-radius: 6px;

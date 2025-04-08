@@ -351,7 +351,6 @@ const HomeSucursal = () => {
     };
 
 
-
     return (
         <>
             {enProceso.size > 0 && (
@@ -372,40 +371,68 @@ const HomeSucursal = () => {
             )}
 
             <div style={{ display: 'flex', gap: '2rem', padding: '2rem' }}>
-                <div style={{ flex: 1, maxWidth: '50vw' }}>
+                <div style={{ flex: 1, maxWidth: '50vw', textAlign: 'center' }}>
                     <img
+                        id="planograma-img"
                         src={planogramaSA3}
                         alt="Planograma"
-                        style={{ width: '100%', borderRadius: '8px', border: '1px solid #ccc' }}
+                        style={{
+                            width: '100%',
+                            borderRadius: '8px',
+                            border: '1px solid #ccc'
+                        }}
                     />
+                    <div
+                        style={{
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            marginTop: '0.5rem'
+                        }}
+                    >
+                        <button
+                            onClick={() => {
+                                const img = document.getElementById('planograma-img');
+                                if (img.requestFullscreen) {
+                                    img.requestFullscreen();
+                                } else if (img.webkitRequestFullscreen) {
+                                    img.webkitRequestFullscreen();
+                                } else if (img.msRequestFullscreen) {
+                                    img.msRequestFullscreen();
+                                }
+                            }}
+                            className="tipo-btn"
+                        >
+                            🔍 Ver en pantalla completa
+                        </button>
+                    </div>
+
                 </div>
+
 
                 <div style={{ flex: 1 }}>
                     {/* Acá va el contenido que ya tenías: botones, selector, carga, etc */}
                     <h2>📦 Carga de Productos por Ubicación</h2>
-                    <button
-                        onClick={() => {
-                            let url = `https://exhibicionback-production.up.railway.app/ubicaciones/txt?sucursal=${sucursalId}`;
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
+                        <button
+                            onClick={() => {
+                                let url = `https://exhibicionback-production.up.railway.app/ubicaciones/txt?sucursal=${sucursalId}`;
 
-                            if (codigoUbicacion) {
-                                // Caso 1: Descargar por ubicación específica (estante)
-                                url += `&ubicacion=${codigoUbicacion}`;
-                            } else if (division && numeroDivision) {
-                                // Caso 2: Descargar por lado o puntera
-                                url += `&tipo=${tipoSeleccionado}&numero=${numeroSeleccionado}&division=${division}&numeroDivision=${numeroDivision}`;
-                            } else {
-                                // Caso 3: Descargar por módulo o góndola completa
-                                url += `&tipo=${tipoSeleccionado}&numero=${numeroSeleccionado}`;
-                            }
+                                if (codigoUbicacion) {
+                                    url += `&ubicacion=${codigoUbicacion}`;
+                                } else if (division && numeroDivision) {
+                                    url += `&tipo=${tipoSeleccionado}&numero=${numeroSeleccionado}&division=${division}&numeroDivision=${numeroDivision}`;
+                                } else {
+                                    url += `&tipo=${tipoSeleccionado}&numero=${numeroSeleccionado}`;
+                                }
 
-                            window.open(url, '_blank');
-                        }}
-                        className="descargar-btn"
-                    >
-                        📥 Descargar TXT
-                    </button>
-
-
+                                window.open(url, '_blank');
+                            }}
+                            className="tipo-btn"
+                        >
+                            📥 Descargar TXT
+                        </button>
+                    </div>
 
 
                     {!ubicacionConfirmada ? (
