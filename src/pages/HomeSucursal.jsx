@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
+import planogramaSA3 from '../assets/planogramas/sucursal3.png';
 import '../styles/HomeSucursal.css';
 import CargaProductos from '../components/CargaProductos';
 import SelectorUbicacion from '../components/SelectorUbicacion';
@@ -371,58 +371,93 @@ const HomeSucursal = () => {
                 </div>
             )}
 
-            <div style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto' }}>
-                <h2>📦 Carga de Productos por Ubicación</h2>
-
-                {!ubicacionConfirmada ? (
-                    <SelectorUbicacion
-                        codigoUbicacion={codigoUbicacion}
-                        setUbicacionConfirmada={setUbicacionConfirmada}
-                        ubicacionConfirmada={ubicacionConfirmada}
-                        tipoSeleccionado={tipoSeleccionado}
-                        setTipoSeleccionado={setTipoSeleccionado}
-                        numeroSeleccionado={numeroSeleccionado}
-                        setNumeroSeleccionado={setNumeroSeleccionado}
-                        division={division}
-                        setDivision={setDivision}
-                        numeroDivision={numeroDivision}
-                        setNumeroDivision={setNumeroDivision}
-                        subdivisionSeleccionada={subdivisionSeleccionada}
-                        setSubdivisionSeleccionada={setSubdivisionSeleccionada}
-                        numeros={numeros}
-                        subdivisiones={subdivisiones}
-                        handleConfirmarUbicacion={handleConfirmarUbicacion}
+            <div style={{ display: 'flex', gap: '2rem', padding: '2rem' }}>
+                <div style={{ flex: 1, maxWidth: '50vw' }}>
+                    <img
+                        src={planogramaSA3}
+                        alt="Planograma"
+                        style={{ width: '100%', borderRadius: '8px', border: '1px solid #ccc' }}
                     />
+                </div>
 
-                ) : (
-                    <CargaProductos
-                        codigoUbicacion={codigoUbicacion}
-                        setUbicacionConfirmada={setUbicacionConfirmada}
-                        ubicacionConfirmada={ubicacionConfirmada}
-                        codigoBarras={codigoBarras}
-                        setCodigoBarras={setCodigoBarras}
-                        cantidad={cantidad}
-                        setCantidad={setCantidad}
-                        handleAgregarProducto={handleAgregarProducto}
-                        loading={loading}
-                        productosCargados={productosCargados}
-                        handleActualizarCantidad={handleActualizarCantidad}
-                        handleEliminarProducto={handleEliminarProducto}
-                        handleReubicarProducto={handleReubicarProducto}
-                        mostrarModalCantidad={mostrarModalCantidad}
-                        productoExistente={productoExistente}
-                        handleGuardarDesdeModal={handleGuardarDesdeModal}
-                        mostrarModalDuplicado={mostrarModalDuplicado}
-                        productoDuplicado={productoDuplicado}
-                        ubicacionAnterior={ubicacionAnterior}
-                        handleConfirmarDuplicado={handleConfirmarDuplicado}
-                        setMostrarModalCantidad={setMostrarModalCantidad}
-                        setMostrarModalDuplicado={setMostrarModalDuplicado}
-                        setProductoDuplicado={setProductoDuplicado}
-                        crearProducto={crearProducto}
-                    />
-                )}
+                <div style={{ flex: 1 }}>
+                    {/* Acá va el contenido que ya tenías: botones, selector, carga, etc */}
+                    <h2>📦 Carga de Productos por Ubicación</h2>
+                    <button
+                        onClick={() => {
+                            let url = `https://exhibicionback-production.up.railway.app/ubicaciones/txt?sucursal=${sucursalId}`;
 
+                            if (codigoUbicacion) {
+                                // Caso 1: Descargar por ubicación específica (estante)
+                                url += `&ubicacion=${codigoUbicacion}`;
+                            } else if (division && numeroDivision) {
+                                // Caso 2: Descargar por lado o puntera
+                                url += `&tipo=${tipoSeleccionado}&numero=${numeroSeleccionado}&division=${division}&numeroDivision=${numeroDivision}`;
+                            } else {
+                                // Caso 3: Descargar por módulo o góndola completa
+                                url += `&tipo=${tipoSeleccionado}&numero=${numeroSeleccionado}`;
+                            }
+
+                            window.open(url, '_blank');
+                        }}
+                        className="descargar-btn"
+                    >
+                        📥 Descargar TXT
+                    </button>
+
+
+
+
+                    {!ubicacionConfirmada ? (
+                        <SelectorUbicacion
+                            codigoUbicacion={codigoUbicacion}
+                            setUbicacionConfirmada={setUbicacionConfirmada}
+                            ubicacionConfirmada={ubicacionConfirmada}
+                            tipoSeleccionado={tipoSeleccionado}
+                            setTipoSeleccionado={setTipoSeleccionado}
+                            numeroSeleccionado={numeroSeleccionado}
+                            setNumeroSeleccionado={setNumeroSeleccionado}
+                            division={division}
+                            setDivision={setDivision}
+                            numeroDivision={numeroDivision}
+                            setNumeroDivision={setNumeroDivision}
+                            subdivisionSeleccionada={subdivisionSeleccionada}
+                            setSubdivisionSeleccionada={setSubdivisionSeleccionada}
+                            numeros={numeros}
+                            subdivisiones={subdivisiones}
+                            handleConfirmarUbicacion={handleConfirmarUbicacion}
+                        />
+
+                    ) : (
+                        <CargaProductos
+                            codigoUbicacion={codigoUbicacion}
+                            setUbicacionConfirmada={setUbicacionConfirmada}
+                            ubicacionConfirmada={ubicacionConfirmada}
+                            codigoBarras={codigoBarras}
+                            setCodigoBarras={setCodigoBarras}
+                            cantidad={cantidad}
+                            setCantidad={setCantidad}
+                            handleAgregarProducto={handleAgregarProducto}
+                            loading={loading}
+                            productosCargados={productosCargados}
+                            handleActualizarCantidad={handleActualizarCantidad}
+                            handleEliminarProducto={handleEliminarProducto}
+                            handleReubicarProducto={handleReubicarProducto}
+                            mostrarModalCantidad={mostrarModalCantidad}
+                            productoExistente={productoExistente}
+                            handleGuardarDesdeModal={handleGuardarDesdeModal}
+                            mostrarModalDuplicado={mostrarModalDuplicado}
+                            productoDuplicado={productoDuplicado}
+                            ubicacionAnterior={ubicacionAnterior}
+                            handleConfirmarDuplicado={handleConfirmarDuplicado}
+                            setMostrarModalCantidad={setMostrarModalCantidad}
+                            setMostrarModalDuplicado={setMostrarModalDuplicado}
+                            setProductoDuplicado={setProductoDuplicado}
+                            crearProducto={crearProducto}
+                        />
+                    )}
+
+                </div>
             </div>
         </>
     );

@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Dashboard.css'; // lo armamos luego
-
+import planogramaSA3 from '../assets/planogramas/sucursal3.png';
 
 const DashboardSucursal = () => {
   const navigate = useNavigate();
@@ -13,9 +13,14 @@ const DashboardSucursal = () => {
       <h2>📍 Exhibición de {nombreSucursal}</h2>
 
       {/* Podés cambiar por imagen real */}
-      <div className="planograma-placeholder">
-        🗺️ Aquí podría ir el planograma de la sucursal
+      <div className="planograma-container">
+        <img
+          src={planogramaSA3}
+          alt="Planograma sucursal"
+          className="planograma-img"
+        />
       </div>
+
 
       <div className="dashboard-buttons">
         <button onClick={() => navigate('/carga')}>📦 Cargar Productos</button>
