@@ -1,0 +1,89 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .modal-contenido {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: aparecer 0.3s ease-out;
+  }
+  
+  .modal-titulo {
+    margin-top: 0;
+    font-size: 1.3rem;
+    color: #1f1f1f;
+    text-align: center;
+  }
+  
+  .modal-subtexto {
+    text-align: center;
+    margin: 0.3rem;
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .modal-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+  }
+  
+  .btn-cancelar {
+    background-color: white;
+    border: 2px solid #ccc;
+    color: #1f1f1f;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-cancelar:hover {
+    background-color: #e3b505;
+    color: white;
+    border-color: #c49c04;
+  }
+  
+  @keyframes aparecer {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .modal-cerrar {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.2s ease;
+  }
+  
+  .modal-cerrar:hover {
+    color: #f6511d;
+  }
+  

@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import SelectorUbicacion from './SelectorUbicacion';
 import axios from 'axios';
+import '../styles/ConfirmarAccionModal.css'
 
-const ConfirmarAccionModal = ({ onConfirm, onCancel, cantidad }) => {
+const ConfirmarAccionModal = ({ onConfirm, onCancel, cantidad, producto }) => {
   const [ubicacionesPermitidas, setUbicacionesPermitidas] = useState([]);
   const [tipoSeleccionado, setTipoSeleccionado] = useState('');
   const [numeroSeleccionado, setNumeroSeleccionado] = useState('');
   const [subdivisionSeleccionada, setSubdivisionSeleccionada] = useState('');
   const [division, setDivision] = useState('');
   const [numeroDivision, setNumeroDivision] = useState('');
-
+  const [moviendo, setMoviendo] = useState(false);
 
   const sucursalId = localStorage.getItem('sucursalId');
 
@@ -48,48 +49,46 @@ const ConfirmarAccionModal = ({ onConfirm, onCancel, cantidad }) => {
       .map(u => `${u.subdivision || ''}${u.numeroSubdivision || ''}`)
   )];
 
-  const handleConfirmarUbicacion = (e) => {
+  const handleConfirmarUbicacion = async (e) => {
     e.preventDefault();
+    if (moviendo) return; // Previene doble click
+    setMoviendo(true);
+
     const codigo = `${tipoSeleccionado}${numeroSeleccionado}${division || ''}${numeroDivision || ''}${subdivisionSeleccionada}`;
-    onConfirm(codigo); // Esto lo recibe ProductoEnUbicacion
+    await onConfirm(codigo); // Aseguramos que sea async (por si el padre lo maneja así)
+    setMoviendo(false);
   };
 
+
+
   return (
-    <div className="modal" style={{
-      position: 'fixed',
-      top: '30%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      background: '#fff',
-      padding: '20px',
-      border: '1px solid #ccc',
-      zIndex: 1000,
-      width: '80%',
-      maxHeight: '90vh',
-      overflowY: 'auto'
-    }}>
-      <h4>🔀 Mover producto</h4>
-      <p>La cantidad actual es: <strong>{cantidad}</strong></p>
+    <div className="modal-overlay">
+      <div className="modal-contenido">
+        {/* Botón de cierre */}
+        <button className="modal-cerrar" onClick={onCancel}>❌</button>
 
-      <SelectorUbicacion
-        tipoSeleccionado={tipoSeleccionado}
-        setTipoSeleccionado={setTipoSeleccionado}
-        numeroSeleccionado={numeroSeleccionado}
-        setNumeroSeleccionado={setNumeroSeleccionado}
-        division={division}
-        setDivision={setDivision}
-        numeroDivision={numeroDivision}
-        setNumeroDivision={setNumeroDivision}
-        subdivisionSeleccionada={subdivisionSeleccionada}
-        setSubdivisionSeleccionada={setSubdivisionSeleccionada}
-        numeros={numeros}
-        subdivisiones={subdivisiones}
-        handleConfirmarUbicacion={handleConfirmarUbicacion}
-      />
+        <h3 className="modal-titulo">🔀 Mover producto:</h3>
+        <p className="modal-subtexto">
+          {producto?.producto?.nombre || producto?.Producto || producto?.nombre || 'Producto desconocido'}{' '}
+    {producto?.presentacion || producto?.Presentaci || ''}
+        </p>
 
-
-      <div style={{ marginTop: '1rem' }}>
-        <button onClick={onCancel}>❌ Cancelar</button>
+        <SelectorUbicacion
+          moviendo={moviendo}
+          tipoSeleccionado={tipoSeleccionado}
+          setTipoSeleccionado={setTipoSeleccionado}
+          numeroSeleccionado={numeroSeleccionado}
+          setNumeroSeleccionado={setNumeroSeleccionado}
+          division={division}
+          setDivision={setDivision}
+          numeroDivision={numeroDivision}
+          setNumeroDivision={setNumeroDivision}
+          subdivisionSeleccionada={subdivisionSeleccionada}
+          setSubdivisionSeleccionada={setSubdivisionSeleccionada}
+          numeros={numeros}
+          subdivisiones={subdivisiones}
+          handleConfirmarUbicacion={handleConfirmarUbicacion}
+        />
       </div>
     </div>
   );

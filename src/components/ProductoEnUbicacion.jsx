@@ -155,8 +155,6 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
                 <button onClick={() => onEliminar(producto.id)} className="btn-eliminar">🗑 Eliminar</button>
             </div>
 
-
-
             {mostrarModal && (
                 <ConfirmarAccionModal
                     onConfirm={handleConfirmarReubicacion}
@@ -168,6 +166,7 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
                     setNumeroSeleccionado={setNumeroSeleccionado}
                     setSubdivisionSeleccionada={setSubdivisionSeleccionada}
                     cantidad={producto.cantidad}
+                    producto={producto}
                 />
             )}
         </div>

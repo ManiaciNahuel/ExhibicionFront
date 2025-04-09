@@ -4,6 +4,7 @@ import planogramaSA3 from '../assets/planogramas/sucursal3.png';
 import '../styles/HomeSucursal.css';
 import CargaProductos from '../components/CargaProductos';
 import SelectorUbicacion from '../components/SelectorUbicacion';
+import { useNavigate } from 'react-router-dom';
 
 
 const HomeSucursal = () => {
@@ -31,6 +32,9 @@ const HomeSucursal = () => {
     const [enProceso, setEnProceso] = useState(new Set());
 
     const sucursalId = localStorage.getItem('sucursalId');
+
+    const navigate = useNavigate();
+
 
     useEffect(() => {
         if (ubicacionConfirmada && codigoUbicacion) {
@@ -429,8 +433,14 @@ const HomeSucursal = () => {
 
 
                 <div style={{ flex: 1 }}>
+                    <button
+                        onClick={() => navigate('/buscar-producto')}
+                        className="boton-flotante-inicio"
+                    >
+                        🔎 Buscar Producto
+                    </button>
                     {/* Acá va el contenido que ya tenías: botones, selector, carga, etc */}
-                    <h2>📦 Carga de Productos por Ubicación</h2>
+                    <h2 className='titulo-home'>📦 Carga de Productos por Ubicación</h2>
                     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
                         <button
                             onClick={() => {

@@ -71,3 +71,9 @@
     background-color: #019630;
     color: white;
 }
+
+.productos-cargados {
+    overflow-y: scroll;
+    max-height: 300px;
+    padding: 0px;
+}

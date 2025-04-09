@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ProductoEnUbicacion from './ProductoEnUbicacion';
 import axios from 'axios';
 import '../styles/BuscarProductos.css'
+import { useNavigate } from 'react-router-dom';
 
 const BuscarProducto = () => {
   const [codigoBarras, setCodigoBarras] = useState('');
@@ -9,6 +10,8 @@ const BuscarProducto = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
+  const navigate = useNavigate();
+
   const buscarUbicaciones = async (e = null) => {
     if (e?.preventDefault) e.preventDefault();
     setLoading(true);
@@ -82,6 +85,13 @@ const BuscarProducto = () => {
 
   return (
     <div className='buscar-container'>
+      <button
+        onClick={() => navigate('/carga')}
+        className="boton-flotante-inicio"
+      >
+        📦 Cargar Productos
+      </button>
+
       <h2>🔍 Ubicación de un producto</h2>
       <form onSubmit={buscarUbicaciones}>
         <input
@@ -116,16 +126,16 @@ const BuscarProducto = () => {
 
                     <ProductoEnUbicacion
                       producto={p}
-                      onActualizar={() => buscarUbicaciones({ preventDefault: () => {} })}
+                      onActualizar={() => buscarUbicaciones({ preventDefault: () => { } })}
                       onEliminar={() => handleEliminarProducto(p.id)}
-                      onReubicar={() => buscarUbicaciones({ preventDefault: () => {} })}
+                      onReubicar={() => buscarUbicaciones({ preventDefault: () => { } })}
                     />
                   </div>
                 ))}
               </div>
             </>
           ) : (
-            <p>⚠️ Producto no encontrado en esta sucursal.</p>
+            <p>⚠️ Producto no encontrado.</p>
           )}
         </div>
       )}

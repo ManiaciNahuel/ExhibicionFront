@@ -149,7 +149,7 @@ const CargaProductos = ({
       {loading && <p>⏳ Cargando productos...</p>}
 
       {!loading && productosCargados.length > 0 && (
-        <ul style={{ padding: 0 }}>
+        <ul className='productos-cargados'>
           {productosCargados.map((p) => (
             <ProductoEnUbicacion
               key={p.id}

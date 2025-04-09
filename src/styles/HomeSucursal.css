@@ -8,6 +8,10 @@
   justify-content: center;
 }
 
+.titulo-home {
+  margin-top: 0.2rem;
+}
+
 .boton-centrado {
   display: block;
   margin: 1rem auto; /* Centrado horizontal */

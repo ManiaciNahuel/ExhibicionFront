@@ -41,3 +41,26 @@
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
+
+.boton-flotante-inicio {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: white;
+    border: 2px solid #ccc;
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    font-weight: bold;
+    color: #1f1f1f;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 100;
+  }
+  
+  .boton-flotante-inicio:hover {
+    background-color: #e3b505;
+    color: white;
+    border-color: #c49c04;
+  }
+  
+  

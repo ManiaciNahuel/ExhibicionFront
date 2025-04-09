@@ -2,6 +2,7 @@ import React from 'react';
 import '../styles/SelectorUbicacion.css'; // lo armamos luego
 
 const SelectorUbicacion = ({
+  moviendo,
   tipoSeleccionado,
   setTipoSeleccionado,
   numeroSeleccionado,
@@ -114,9 +115,14 @@ const SelectorUbicacion = ({
       ) : null}
 
       {subdivisionSeleccionada && (
-        <button type="submit" className="btn-confirmar-ubicacion">
-          ✅ Confirmar Ubicación
+        <button
+          type="submit"
+          className="btn-confirmar-ubicacion"
+          disabled={moviendo}
+        >
+          {moviendo ? '⏳ Moviendo...' : '✅ Confirmar Ubicación'}
         </button>
+
       )}
     </form>
   );
