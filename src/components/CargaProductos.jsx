@@ -82,15 +82,17 @@ const CargaProductos = ({
 
   return (
     <div>
-      <h3 className="ubicacion-actual">
-        📍 Ubicación actual: <span>{codigoUbicacion}</span>
-      </h3>
+      <div className="ubicacion-actual">
+        <h3>
+          📍 Ubicación actual: <span>{codigoUbicacion}</span>
+        </h3>
 
-      <button onClick={() => setUbicacionConfirmada(false)} style={{ marginBottom: '1rem' }} className='cambiar-ubicacion'>
-        🔄 Cambiar ubicación
-      </button>
+        <button onClick={() => setUbicacionConfirmada(false)} className='cambiar-ubicacion'>
+          🔄 Cambiar ubicación
+        </button>
+      </div>
 
-      <form onSubmit={handleAgregarProductoWrapper} style={{ marginBottom: '1rem' }}>
+      <form onSubmit={handleAgregarProductoWrapper} style={{ padding: '1rem 0rem' , margin: '1rem 0rem', borderTop: '3px solid #ccc' }}>
 
         <label>📦 Escaneá o escribí el código del producto:</label><br />
 

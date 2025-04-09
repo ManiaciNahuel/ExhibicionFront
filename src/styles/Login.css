@@ -33,7 +33,7 @@
     margin-bottom: 1rem;
     border-radius: 6px;
     border: 1px solid #ccc;
-    font-size: 1rem;
+    font-size: 0.8rem;
     box-sizing: border-box;
   }
   
@@ -44,7 +44,7 @@
     color: white;
     border: none;
     border-radius: 6px;
-    font-size: 1rem;
+    font-size: 0.8rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
   }

@@ -5,14 +5,14 @@
     border-radius: 8px;
     background-color: #fbfaf8;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    font-size: 1rem;
+    font-size: 0.8rem;
     color: #1f1f1f;
 }
 
 .input-cantidad-editar {
     width: 60px;
     padding: 0.3rem 0.5rem;
-    font-size: 1rem;
+    font-size: 0.8rem;
     border: 2px solid #ccc;
     border-radius: 6px;
     margin-left: 0.5rem;

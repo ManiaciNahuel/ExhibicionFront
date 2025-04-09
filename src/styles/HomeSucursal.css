@@ -10,13 +10,14 @@
 
 .titulo-home {
   margin-top: 0.2rem;
+  font-size: 1.2rem;
 }
 
 .boton-centrado {
   display: block;
   margin: 1rem auto; /* Centrado horizontal */
   padding: 0.6rem 1.1rem;
-  font-size: 1rem;
+  font-size: 0.8rem;
   border-radius: 6px;
   cursor: pointer;
   background-color: #e3b505;

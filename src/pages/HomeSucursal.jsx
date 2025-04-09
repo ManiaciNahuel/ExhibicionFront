@@ -430,8 +430,6 @@ const HomeSucursal = () => {
                     </div>
                 </div>
 
-
-
                 <div style={{ flex: 1 }}>
                     <button
                         onClick={() => navigate('/buscar-producto')}

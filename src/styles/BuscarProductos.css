@@ -9,7 +9,7 @@
 .input-buscar {
     margin-top: 1rem;
     padding: 0.5rem 0.8rem;
-    font-size: 1rem;
+    font-size: 0.8rem;
     border-radius: 6px;
     border: 2px solid #ccc;
     outline: none;
@@ -22,7 +22,7 @@
 .buscar-btn {
     margin-left: 0.5rem;
     padding: 0.5rem 1rem;
-    font-size: 1rem;
+    font-size: 0.8rem;
     border-radius: 6px;
     color: black;
     border: 2px solid #ccc;
@@ -33,7 +33,7 @@
 .buscar-btn:hover {
     margin-left: 0.5rem;
     padding: 0.5rem 1rem;
-    font-size: 1rem;
+    font-size: 0.8rem;
     border-radius: 6px;
     background-color: #e3b505;
     color: white;
