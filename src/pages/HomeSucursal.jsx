@@ -378,7 +378,7 @@ const HomeSucursal = () => {
                 </div>
             )}
 
-            <div style={{ display: 'flex', gap: '2rem', padding: '2rem' }}>
+            <div style={{ display: 'flex', gap: '2rem', padding: '2rem', marginTop:'2rem' }}>
                 <div style={{ flex: 1, maxWidth: '50vw', textAlign: 'center' }}>
                     <img
                         id="planograma-img"
@@ -454,7 +454,7 @@ const HomeSucursal = () => {
 
                                 window.open(url, '_blank');
                             }}
-                            className="tipo-btn"
+                            className="boton-flotante-txt"
                         >
                             📥 Descargar TXT
                         </button>
