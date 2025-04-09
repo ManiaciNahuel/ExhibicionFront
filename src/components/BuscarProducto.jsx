@@ -81,8 +81,8 @@ const BuscarProducto = () => {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>🔍 Buscar Producto</h2>
+    <div className='buscar-container'>
+      <h2>🔍 Ubicación de un producto</h2>
       <form onSubmit={buscarUbicaciones}>
         <input
           type="text"
@@ -92,7 +92,7 @@ const BuscarProducto = () => {
           required
           className='input-buscar'
         />
-        <button type="submit" style={{ marginLeft: '1rem' }}>Buscar</button>
+        <button type="submit" className='buscar-btn'>Buscar</button>
       </form>
 
       {loading && <p>⏳ Buscando...</p>}

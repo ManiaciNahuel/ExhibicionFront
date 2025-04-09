@@ -69,7 +69,5 @@
 
 .boton-agregar:hover {
     background-color: #019630;
-    color: black;
-
-    font-weight: 700;
+    color: white;
 }

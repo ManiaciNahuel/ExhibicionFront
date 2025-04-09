@@ -1,3 +1,11 @@
+.buscar-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+}
+
 .input-buscar {
     margin-top: 1rem;
     padding: 0.5rem 0.8rem;
@@ -10,4 +18,26 @@
 
 .input-buscar:focus {
     border-color: #e3b505;
+}
+.buscar-btn {
+    margin-left: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    color: black;
+    border: 2px solid #ccc;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.buscar-btn:hover {
+    margin-left: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    background-color: #e3b505;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }

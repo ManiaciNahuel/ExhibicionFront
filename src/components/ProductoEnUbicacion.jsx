@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import ConfirmarAccionModal from './ConfirmarAccionModal';
+import '../styles/ProductoEnUbicacion.css';
 
 const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, onAgregarUbicacionSiFalta }) => {
     const [modoEdicion, setModoEdicion] = useState(false);
@@ -38,27 +39,27 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
         try {
             const tipo = nuevaUbicacion.match(/^[A-Z]+/)[0];
             let resto = nuevaUbicacion.replace(tipo, '');
-    
+
             const numero = parseInt(resto.match(/^\d+/)[0]);
             resto = resto.replace(numero, '');
-    
+
             // 🧩 Extraer división y número de división (solo para góndolas)
             let division = null;
             let numeroDivision = null;
-    
+
             if (tipo === 'G') {
                 division = resto[0]; // 'P' o 'L'
                 resto = resto.slice(1);
                 numeroDivision = parseInt(resto[0]); // 1 o 2
                 resto = resto.slice(1);
             }
-    
+
             const subdivision = resto[0] || null;
             const tempNumSub = parseInt(resto.slice(1));
             const numeroSubdivision = Number.isNaN(tempNumSub) ? null : tempNumSub;
-    
+
             const sucursalId = parseInt(localStorage.getItem('sucursalId'));
-    
+
             console.log("📦 Reubicando con datos:", {
                 codebar: producto.codigo,
                 tipo,
@@ -70,13 +71,13 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
                 cantidad: producto.cantidad,
                 sucursalId
             });
-    
+
             const check = await axios.get(`https://exhibicionback-production.up.railway.app/ubicaciones?sucursal=${sucursalId}&ubicacion=${nuevaUbicacion}`);
             const yaExiste = check.data.find(p => p.codebar === producto.codigo);
-    
+
             if (yaExiste) {
                 console.log("🗑 Eliminando producto con ID:", producto.id);
-    
+
                 alert(`⚠️ El producto "${producto.nombre}" ya existe en la ubicación "${nuevaUbicacion}". 
     Si desea editar las cantidades, diríjase a esa ubicación. De todos modos, queda eliminado el producto de esta ubicación.`);
                 await axios.delete(`https://exhibicionback-production.up.railway.app/ubicaciones/${producto.id}`);
@@ -84,7 +85,7 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
                 setMostrarModal(false);
                 return;
             }
-    
+
             // ✅ Crear en nueva ubicación
             const res = await axios.post('https://exhibicionback-production.up.railway.app/ubicaciones', {
                 codebar: producto.codebar || producto.codigo,
@@ -97,9 +98,9 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
                 cantidad: producto.cantidad,
                 sucursalId
             });
-    
+
             const nuevaUbic = `${tipo}${numero}${division || ''}${numeroDivision || ''}${subdivision || ''}${numeroSubdivision || ''}`;
-    
+
             const nuevoProducto = {
                 id: res.data.id,
                 nombre: producto.nombre,
@@ -107,12 +108,12 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
                 cantidad: producto.cantidad,
                 ubicacion: nuevaUbic
             };
-    
+
             console.log("🗑 Eliminando producto con ID:", producto.id);
             await axios.delete(`https://exhibicionback-production.up.railway.app/ubicaciones/${producto.id}`);
             onReubicar(producto.id, nuevoProducto, nuevaUbic);
             onAgregarUbicacionSiFalta?.(nuevoProducto);
-    
+
             setMostrarModal(false);
         } catch (err) {
             console.error("❌ Error al reubicar:", err);
@@ -121,42 +122,40 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
             setMoviendo(false);
         }
     };
-    
+
 
     return (
-        <div style={{ marginBottom: '0.5rem', padding: '0.5rem', border: '1px solid #ccc' }}>
-            <strong> {producto?.producto?.nombre || producto?.Producto || producto?.nombre || 'Cargando producto'} {producto?.presentacion || producto?.Presentaci || ''}</strong> ({producto.codigo || producto.codebar})<br />
-            Cantidad:{" "}
+        <div className="producto-en-ubicacion">
+            <strong>
+                {producto?.producto?.nombre || producto?.Producto || producto?.nombre || 'Cargando producto'} {producto?.presentacion || producto?.Presentaci || ''}
+            </strong> ({producto.codigo || producto.codebar})
+            <br />
+            Cantidad:{' '}
             {modoEdicion ? (
                 <input
                     type="number"
                     value={cantidadEditada}
                     onChange={(e) => setCantidadEditada(e.target.value)}
+                    className="input-cantidad-editar"
                 />
             ) : (
                 <span>{producto.cantidad}</span>
             )}
             <br />
 
-            {modoEdicion ? (
-                <button onClick={handleGuardar}>💾 Guardar</button>
-            ) : (
-                <button onClick={() => setModoEdicion(true)}>✏️ Editar cantidad</button>
-            )}
+            <div className="botones-producto">
+                {modoEdicion ? (
+                    <button onClick={handleGuardar} className="btn-secundario">💾 Guardar</button>
+                ) : (
+                    <button onClick={() => setModoEdicion(true)} className="btn-secundario">✏️ Editar cantidad</button>
+                )}
 
-            <button onClick={() => setMostrarModal(true)} style={{ marginLeft: '10px' }}>
-                🚚 Mover
-            </button>
+                <button onClick={() => setMostrarModal(true)} className="btn-accion">🚚 Mover</button>
 
-            <button onClick={() => onEliminar(producto.id)} style={{ marginLeft: '10px' }}>
-                🗑 Eliminar
-            </button>
+                <button onClick={() => onEliminar(producto.id)} className="btn-eliminar">🗑 Eliminar</button>
+            </div>
 
-            {moviendo && (
-                <div style={{ color: 'orange', marginTop: '0.5rem' }}>
-                    ⏳ Moviendo producto de ubicación...
-                </div>
-            )}
+
 
             {mostrarModal && (
                 <ConfirmarAccionModal
