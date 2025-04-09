@@ -6,13 +6,13 @@ const ModalEditarCantidad = ({ producto, onClose, onGuardar }) => {
     const handleSubmit = () => {
         const cantidad = parseInt(nuevaCantidad);
         if (isNaN(cantidad) || cantidad < 1) {
-          alert("Cantidad inválida");
-          return;
+            alert("Cantidad inválida");
+            return;
         }
         onGuardar(producto.id, cantidad);
         onClose()
-      };
-      
+    };
+
 
     return (
         <div style={{
@@ -24,19 +24,21 @@ const ModalEditarCantidad = ({ producto, onClose, onGuardar }) => {
             zIndex: 1000
         }}>
             <div style={{ backgroundColor: '#fff', padding: '2rem', borderRadius: '8px', width: '90%', maxWidth: '400px' }}>
-                <h3>🛑 Producto ya cargado</h3>
+                <h3 >🛑 Producto ya cargado</h3>
                 <p><strong>{producto.nombre}</strong> ({producto.codigo}) ya está en esta ubicación.</p>
-                <label>Editar cantidad:</label>
-                <input
-                    type="number"
-                    value={nuevaCantidad}
-                    min="1"
-                    onChange={(e) => setNuevaCantidad(e.target.value)}
-                    style={{ width: '100%', marginTop: '0.5rem', padding: '0.5rem' }}
-                />
+                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    <label>Editar cantidad: </label>
+                    <input
+                        type="number"
+                        value={nuevaCantidad}
+                        min="1"
+                        onChange={(e) => setNuevaCantidad(e.target.value)}
+                        style={{ width: '4rem', padding: '0.5rem', marginLeft: '1rem', borderRadius: '5px', border: '1px solid #ccc' }}
+                    />
+                </div>
                 <div style={{ marginTop: '1rem', textAlign: 'right' }}>
-                    <button onClick={onClose} style={{ marginRight: '1rem' }}>❌ Cancelar</button>
-                    <button onClick={handleSubmit}>💾 Guardar</button>
+                    <button onClick={handleSubmit} style={{ margin: '0rem 1rem' }} className="btn-accion">💾 Guardar</button>
+                    <button onClick={onClose} className="btn-eliminar">❌ Cancelar</button>
                 </div>
             </div>
         </div>

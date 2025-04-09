@@ -361,7 +361,7 @@ const HomeSucursal = () => {
 
     return (
         <>
-            <div style={{ display: 'flex', gap: '2rem', padding: '2rem', marginTop: '2rem' }}>
+            <div style={{ display: 'flex', gap: '2rem', padding: '2rem 1rem 0rem', marginTop: '2rem' }}>
                 <div style={{ flex: 1, maxWidth: '50vw', textAlign: 'center' }}>
                     <img
                         id="planograma-img"
@@ -413,7 +413,7 @@ const HomeSucursal = () => {
                     </div>
                 </div>
 
-                <div style={{ flex: 1 }}>
+                <div style={{ flex: 1.2 }}>
                     <button
                         onClick={() => navigate('/buscar-producto')}
                         className="boton-flotante-inicio"

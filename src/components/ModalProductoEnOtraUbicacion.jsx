@@ -28,21 +28,25 @@ const ModalProductoEnOtraUbicacion = ({ producto, ubicacionAnterior, onConfirmar
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1.5rem' }}>
                     <button
-                        style={{ backgroundColor: '#28a745', color: 'white', padding: '0.5rem', borderRadius: '5px' }}
+                        style={{ padding: '0.5rem', border: '1px solid #28a745'}}
+                        className="btn-secundario"
                         onClick={() => onConfirmar('ambas')}
                     >
                         ✅ Agregar en ambas
                     </button>
 
                     <button
-                        style={{ backgroundColor: '#ffc107', padding: '0.5rem', borderRadius: '5px' }}
+                        style={{ padding: '0.5rem' }}
+
+                        className="btn-secundario"
                         onClick={() => onConfirmar('mover')}
                     >
                         🚚 Mover a nueva ubicación
                     </button>
 
                     <button
-                        style={{ backgroundColor: '#dc3545', color: 'white', padding: '0.5rem', borderRadius: '5px' }}
+                    className="btn-eliminar"
+                        style={{ padding: '0.5rem' }}
                         onClick={onClose}
                     >
                         ❌ Cancelar

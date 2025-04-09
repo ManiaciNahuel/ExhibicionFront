@@ -95,7 +95,7 @@ const CargaProductos = ({
         </button>
       </div>
 
-      <form onSubmit={handleAgregarProductoWrapper} style={{ padding: '1rem 0rem', borderTop: '3px solid #ccc' }}>
+      <form onSubmit={handleAgregarProductoWrapper} style={{ padding: '1rem 0rem 0rem', borderTop: '3px solid #ccc' }}>
 
         <label>📦 Escaneá o escribí el código del producto:</label><br />
         <div className='container-agregar'>
