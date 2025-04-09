@@ -13,6 +13,7 @@ const HomeSucursal = () => {
     const [codigoUbicacion, setCodigoUbicacion] = useState('');
     const [ubicacionConfirmada, setUbicacionConfirmada] = useState(false);
     const [productosCargando, setProductosCargando] = useState(new Set());
+    const [errorProducto, setErrorProducto] = useState('');
 
     const [codigoBarras, setCodigoBarras] = useState('');
     const [cantidad, setCantidad] = useState(1);
@@ -148,9 +149,10 @@ const HomeSucursal = () => {
             const res = await axios.get(`https://exhibicionback-production.up.railway.app/productos/${codigoBarras}`);
             const producto = res.data;
             if (!producto) {
-                alert('Producto no encontrado');
+                setErrorProducto('Producto no encontrado');
                 return;
             }
+
 
             // 🧠 Descomponer ubicación correctamente
             const tipoUbicacion = codigoUbicacion.match(/^[A-Z]+/)[0];
@@ -215,6 +217,8 @@ const HomeSucursal = () => {
 
         } catch (err) {
             console.error("❌ Error al asignar producto:", err);
+            setErrorProducto('Producto no encontrado.');
+
         } finally {
             setEnProceso(prev => {
                 const nuevo = new Set(prev);
@@ -376,12 +380,28 @@ const HomeSucursal = () => {
                         id="planograma-img"
                         src={planogramaSA3}
                         alt="Planograma"
+                        onClick={() => {
+                            const img = document.getElementById('planograma-img');
+                            if (document.fullscreenElement) {
+                                document.exitFullscreen();
+                            } else {
+                                if (img.requestFullscreen) {
+                                    img.requestFullscreen();
+                                } else if (img.webkitRequestFullscreen) {
+                                    img.webkitRequestFullscreen();
+                                } else if (img.msRequestFullscreen) {
+                                    img.msRequestFullscreen();
+                                }
+                            }
+                        }}
                         style={{
                             width: '100%',
                             borderRadius: '8px',
-                            border: '1px solid #ccc'
+                            border: '1px solid #ccc',
+                            cursor: 'pointer' // Para que se note que se puede clickear
                         }}
                     />
+
                     <div
                         style={{
                             width: '100%',
@@ -393,12 +413,10 @@ const HomeSucursal = () => {
                         <button
                             onClick={() => {
                                 const img = document.getElementById('planograma-img');
-                                if (img.requestFullscreen) {
-                                    img.requestFullscreen();
-                                } else if (img.webkitRequestFullscreen) {
-                                    img.webkitRequestFullscreen();
-                                } else if (img.msRequestFullscreen) {
-                                    img.msRequestFullscreen();
+                                if (document.fullscreenElement) {
+                                    document.exitFullscreen();
+                                } else {
+                                    img.requestFullscreen?.() || img.webkitRequestFullscreen?.() || img.msRequestFullscreen?.();
                                 }
                             }}
                             className="tipo-btn"
@@ -406,8 +424,8 @@ const HomeSucursal = () => {
                             🔍 Ver en pantalla completa
                         </button>
                     </div>
-
                 </div>
+
 
 
                 <div style={{ flex: 1 }}>
@@ -457,6 +475,8 @@ const HomeSucursal = () => {
 
                     ) : (
                         <CargaProductos
+                            errorProducto={errorProducto}
+                            setErrorProducto={setErrorProducto}
                             codigoUbicacion={codigoUbicacion}
                             setUbicacionConfirmada={setUbicacionConfirmada}
                             ubicacionConfirmada={ubicacionConfirmada}

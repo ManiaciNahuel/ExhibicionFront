@@ -2,8 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import ProductoEnUbicacion from './ProductoEnUbicacion';
 import ModalEditarCantidad from './ModalEditarCantidad';
 import ModalProductoEnOtraUbicacion from './ModalProductoEnOtraUbicacion';
+import '../styles/CargaProductos.css'
 
 const CargaProductos = ({
+  errorProducto,
+  setErrorProducto,
   codigoUbicacion,
   setUbicacionConfirmada,
   codigoBarras,
@@ -38,23 +41,6 @@ const CargaProductos = ({
     }
   }, []);
 
-  const handleDescargarTxt = () => {
-    if (!productosCargados || productosCargados.length === 0) {
-      alert("No hay productos para descargar.");
-      return;
-    }
-    const lineas = productosCargados.map(p => `${p.codebar || p.codigo || ''};`);
-    const contenido = lineas.join('\n');
-    const blob = new Blob([contenido], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${codigoUbicacion}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
   const handleCodigoChange = (e) => {
     setCodigoBarras(e.target.value);
   };
@@ -82,16 +68,13 @@ const CargaProductos = ({
     setCantidad(1);
     inputCodigoRef.current?.focus();
   };
-  
+
 
   return (
     <div>
       <h3>📍 Ubicación actual: <span style={{ color: 'green' }}>{codigoUbicacion}</span></h3>
-      <button onClick={() => setUbicacionConfirmada(false)} style={{ marginBottom: '1rem' }}>
+      <button onClick={() => setUbicacionConfirmada(false)} style={{ marginBottom: '1rem' }} className='cambiar-ubicacion'>
         🔄 Cambiar ubicación
-      </button>
-      <button onClick={handleDescargarTxt} className="descargar-btn">
-        📥 Descargar TXT
       </button>
 
       <form onSubmit={handleAgregarProductoWrapper} style={{ marginBottom: '1rem' }}>
@@ -112,7 +95,10 @@ const CargaProductos = ({
           type="number"
           value={cantidad}
           ref={inputCantidadRef}
-          onChange={(e) => setCantidad(parseInt(e.target.value))}
+          onChange={(e) => {
+            setCantidad(parseInt(e.target.value));
+            setErrorProducto('')
+          }}
           onKeyDown={handleCantidadKeyPress}
           min="1"
           required
@@ -126,6 +112,21 @@ const CargaProductos = ({
         )}
 
       </form>
+      {errorProducto && (
+        <div
+          style={{
+            backgroundColor: '#f8d7da',
+            color: '#721c24',
+            padding: '0.6rem 1rem',
+            borderRadius: '6px',
+            marginBottom: '1rem',
+            border: '1px solid #f5c6cb'
+          }}
+        >
+          ⚠️ {errorProducto}
+        </div>
+      )}
+
 
       {loading && <p>⏳ Cargando productos...</p>}
 

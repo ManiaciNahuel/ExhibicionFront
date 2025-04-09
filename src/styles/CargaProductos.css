@@ -1,0 +1,17 @@
+.cambiar-ubicacion {
+    padding: 0.25rem 0.45rem;
+    background-color: white;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #1f1f1f;
+    font-weight: bold;
+}
+
+.cambiar-ubicacion:hover {
+    background-color: #e3b505;
+    color: white;
+    border-color: #c49c04;
+}

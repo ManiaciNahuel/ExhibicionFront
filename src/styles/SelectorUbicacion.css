@@ -17,7 +17,7 @@
 .tipo-btn,
 .numero-btn,
 .subdivision-btn {
-  padding: 0.55rem 0.75rem;
+  padding: 0.25rem 0.45rem;
   margin: 0.2rem;
   background-color: white;
   border: 2px solid #ccc;
@@ -74,7 +74,7 @@
 
 .division-btn {
   font-weight: bold;
-  padding: 0.55rem 0.75rem;
+  padding: 0.25rem 0.45rem;
   margin: 0.2rem;
   background-color: white;
   border: 2px solid #ccc;
