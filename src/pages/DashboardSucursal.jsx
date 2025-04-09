@@ -13,15 +13,6 @@ const DashboardSucursal = () => {
       <h2>📍 Exhibición de {nombreSucursal}</h2>
 
       {/* Podés cambiar por imagen real */}
-      <div className="planograma-container">
-        <img
-          src={planogramaSA3}
-          alt="Planograma sucursal"
-          className="planograma-img"
-        />
-      </div>
-
-
       <div className="dashboard-buttons">
         <button onClick={() => navigate('/carga')}>📦 Cargar Productos</button>
         {/* <button onClick={() => navigate('/ver-ubicaciones')}>📂 Ver Ubicaciones</button> */}

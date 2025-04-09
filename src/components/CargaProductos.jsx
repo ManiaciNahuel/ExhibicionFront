@@ -69,10 +69,23 @@ const CargaProductos = ({
     inputCodigoRef.current?.focus();
   };
 
+  useEffect(() => {
+    if (errorProducto) {
+      const timer = setTimeout(() => {
+        setErrorProducto('');
+      }, 4000); // 4 segundos
+
+      return () => clearTimeout(timer); // Limpia el timer si el componente se desmonta
+    }
+  }, [errorProducto]);
+
 
   return (
     <div>
-      <h3>📍 Ubicación actual: <span style={{ color: 'green' }}>{codigoUbicacion}</span></h3>
+      <h3 className="ubicacion-actual">
+        📍 Ubicación actual: <span>{codigoUbicacion}</span>
+      </h3>
+
       <button onClick={() => setUbicacionConfirmada(false)} style={{ marginBottom: '1rem' }} className='cambiar-ubicacion'>
         🔄 Cambiar ubicación
       </button>
@@ -89,22 +102,27 @@ const CargaProductos = ({
           onKeyDown={handleCodigoKeyPress}
           placeholder="Código de barras"
           required
+          className="input-codigo"
           style={{ marginRight: '1rem' }}
         />
+
         <input
           type="number"
           value={cantidad}
           ref={inputCantidadRef}
           onChange={(e) => {
             setCantidad(parseInt(e.target.value));
-            setErrorProducto('')
+            setErrorProducto('');
           }}
           onKeyDown={handleCantidadKeyPress}
           min="1"
           required
-          style={{ width: '60px', marginRight: '1rem' }}
+          className="input-cantidad"
+          style={{ marginRight: '1rem' }}
         />
-        <button type="submit">➕ Agregar</button>
+
+        <button type="submit" className="boton-agregar">Agregar</button>
+
         {cargando && (
           <p style={{ color: 'blue', fontStyle: 'italic', marginTop: '0.5rem' }}>
             ⏳ Agregando producto...

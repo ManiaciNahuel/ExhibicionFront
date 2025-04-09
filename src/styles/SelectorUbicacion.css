@@ -14,6 +14,11 @@
   color: #333;
 }
 
+.numero-btn {
+  padding: 0.45rem 0.65rem !important;
+  margin: 0.06rem !important;
+}
+
 .tipo-btn,
 .numero-btn,
 .subdivision-btn {
@@ -60,6 +65,7 @@
 .btn-confirmar-ubicacion:hover {
   background-color: #00703d;
 }
+
 .division-selector {
   margin-bottom: 2rem;
   text-align: center;
@@ -68,7 +74,7 @@
 
 .division-selector h4 {
   font-weight: bold;
-  margin-bottom: 0.8rem;
+  margin: 0.8rem 0.2rem 0.6rem;
   color: #333;
 }
 

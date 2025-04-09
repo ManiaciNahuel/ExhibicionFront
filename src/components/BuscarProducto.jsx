@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ProductoEnUbicacion from './ProductoEnUbicacion';
 import axios from 'axios';
+import '../styles/BuscarProductos.css'
 
 const BuscarProducto = () => {
   const [codigoBarras, setCodigoBarras] = useState('');
@@ -89,6 +90,7 @@ const BuscarProducto = () => {
           value={codigoBarras}
           onChange={(e) => setCodigoBarras(e.target.value)}
           required
+          className='input-buscar'
         />
         <button type="submit" style={{ marginLeft: '1rem' }}>Buscar</button>
       </form>

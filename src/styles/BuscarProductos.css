@@ -1,0 +1,13 @@
+.input-buscar {
+    margin-top: 1rem;
+    padding: 0.5rem 0.8rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 2px solid #ccc;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.input-buscar:focus {
+    border-color: #e3b505;
+}
