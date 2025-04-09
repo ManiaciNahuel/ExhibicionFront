@@ -5,6 +5,8 @@ import ModalProductoEnOtraUbicacion from './ModalProductoEnOtraUbicacion';
 import '../styles/CargaProductos.css'
 
 const CargaProductos = ({
+  enProceso,
+  setEnProceso,
   errorProducto,
   setErrorProducto,
   codigoUbicacion,
@@ -62,12 +64,13 @@ const CargaProductos = ({
   const handleAgregarProductoWrapper = async (e) => {
     e.preventDefault();
     setCargando(true);
-    await handleAgregarProducto(e); // Esta viene como prop desde el padre
-    setCargando(false);
     setCodigoBarras('');
     setCantidad(1);
     inputCodigoRef.current?.focus();
+    const exito = await handleAgregarProducto(e);
+    setCargando(false);
   };
+
 
   useEffect(() => {
     if (errorProducto) {
@@ -84,7 +87,7 @@ const CargaProductos = ({
     <div>
       <div className="ubicacion-actual">
         <h3>
-          📍 Ubicación actual: <span>{codigoUbicacion}</span>
+          📍 Ubicación actual: <span> {codigoUbicacion} </span>
         </h3>
 
         <button onClick={() => setUbicacionConfirmada(false)} className='cambiar-ubicacion'>
@@ -92,45 +95,46 @@ const CargaProductos = ({
         </button>
       </div>
 
-      <form onSubmit={handleAgregarProductoWrapper} style={{ padding: '1rem 0rem' , margin: '1rem 0rem', borderTop: '3px solid #ccc' }}>
+      <form onSubmit={handleAgregarProductoWrapper} style={{ padding: '1rem 0rem', borderTop: '3px solid #ccc' }}>
 
         <label>📦 Escaneá o escribí el código del producto:</label><br />
+        <div className='container-agregar'>
+          <input
+            type="text"
+            value={codigoBarras}
+            ref={inputCodigoRef}
+            onChange={handleCodigoChange}
+            onKeyDown={handleCodigoKeyPress}
+            placeholder="Código de barras"
+            required
+            className="input-codigo"
+            style={{ marginRight: '1rem' }}
+          />
 
-        <input
-          type="text"
-          value={codigoBarras}
-          ref={inputCodigoRef}
-          onChange={handleCodigoChange}
-          onKeyDown={handleCodigoKeyPress}
-          placeholder="Código de barras"
-          required
-          className="input-codigo"
-          style={{ marginRight: '1rem' }}
-        />
+          <input
+            type="number"
+            value={cantidad}
+            ref={inputCantidadRef}
+            onChange={(e) => {
+              setCantidad(parseInt(e.target.value));
+              setErrorProducto('');
+            }}
+            onKeyDown={handleCantidadKeyPress}
+            min="1"
+            required
+            className="input-cantidad"
+            style={{ marginRight: '1rem' }}
+          />
+          <div className="grupo-boton-agregar">
+            <button type="submit" className="boton-agregar">Agregar</button>
+            {enProceso.size > 0 && (
+              <div className="agregando">
+                🕓 Agregando {enProceso.size}...
+              </div>
+            )}
+          </div>
 
-        <input
-          type="number"
-          value={cantidad}
-          ref={inputCantidadRef}
-          onChange={(e) => {
-            setCantidad(parseInt(e.target.value));
-            setErrorProducto('');
-          }}
-          onKeyDown={handleCantidadKeyPress}
-          min="1"
-          required
-          className="input-cantidad"
-          style={{ marginRight: '1rem' }}
-        />
-
-        <button type="submit" className="boton-agregar">Agregar</button>
-
-        {cargando && (
-          <p style={{ color: 'blue', fontStyle: 'italic', marginTop: '0.5rem' }}>
-            ⏳ Agregando producto...
-          </p>
-        )}
-
+        </div>
       </form>
       {errorProducto && (
         <div

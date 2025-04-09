@@ -218,11 +218,11 @@ const HomeSucursal = () => {
                 letraDivision || null,
                 numeroDivision
             );
-
+            return true
         } catch (err) {
             console.error("❌ Error al asignar producto:", err);
             setErrorProducto('Producto no encontrado.');
-
+            return false
         } finally {
             setEnProceso(prev => {
                 const nuevo = new Set(prev);
@@ -361,24 +361,7 @@ const HomeSucursal = () => {
 
     return (
         <>
-            {enProceso.size > 0 && (
-                <div style={{
-                    position: 'fixed',
-                    top: 10,
-                    right: 10,
-                    background: '#222',
-                    color: '#fff',
-                    padding: '10px 15px',
-                    borderRadius: '8px',
-                    zIndex: 999,
-                    fontSize: '0.9rem',
-                    boxShadow: '0 2px 6px rgba(0,0,0,0.3)'
-                }}>
-                    🕓 Agregando {enProceso.size} producto{enProceso.size > 1 ? 's' : ''}...
-                </div>
-            )}
-
-            <div style={{ display: 'flex', gap: '2rem', padding: '2rem', marginTop:'2rem' }}>
+            <div style={{ display: 'flex', gap: '2rem', padding: '2rem', marginTop: '2rem' }}>
                 <div style={{ flex: 1, maxWidth: '50vw', textAlign: 'center' }}>
                     <img
                         id="planograma-img"
@@ -483,6 +466,8 @@ const HomeSucursal = () => {
 
                     ) : (
                         <CargaProductos
+                            enProceso={enProceso}
+                            setEnProceso={setEnProceso} 
                             errorProducto={errorProducto}
                             setErrorProducto={setErrorProducto}
                             codigoUbicacion={codigoUbicacion}
