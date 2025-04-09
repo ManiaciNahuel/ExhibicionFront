@@ -23,7 +23,7 @@ const ModalEditarCantidad = ({ producto, onClose, onGuardar }) => {
             display: 'flex', justifyContent: 'center', alignItems: 'center',
             zIndex: 1000
         }}>
-            <div style={{ backgroundColor: '#fff', padding: '2rem', borderRadius: '8px', width: '90%', maxWidth: '400px' }}>
+            <div style={{ backgroundColor: '#fff', padding: '1rem', borderRadius: '8px', width: '90%', maxWidth: '400px' }}>
                 <h3 >🛑 Producto ya cargado</h3>
                 <p><strong>{producto.nombre}</strong> ({producto.codigo}) ya está en esta ubicación.</p>
                 <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>

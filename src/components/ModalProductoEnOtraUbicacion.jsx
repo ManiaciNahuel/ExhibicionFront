@@ -17,10 +17,11 @@ const ModalProductoEnOtraUbicacion = ({ producto, ubicacionAnterior, onConfirmar
         }}>
             <div style={{
                 backgroundColor: '#fff',
-                padding: '2rem',
+                padding: '1rem',
                 borderRadius: '8px',
                 width: '90%',
-                maxWidth: '450px'
+                maxWidth: '450px',
+                border: '1px solid #ccc',
             }}>
                 <h3>🔴 Producto ya cargado</h3>
                 <p><strong>{producto.nombre || 'Producto'}</strong> ({producto.codebar}) ya está en la ubicación <strong>{ubicacionAnterior}</strong>.</p>
