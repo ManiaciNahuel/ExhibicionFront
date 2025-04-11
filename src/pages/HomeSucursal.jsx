@@ -425,15 +425,13 @@ const HomeSucursal = () => {
                     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
                         <button
                             onClick={() => {
-                                let url = `https://exhibicionback-production.up.railway.app/ubicaciones/txt?sucursal=${sucursalId}`;
+                                // Construir la ubicación actual según la selección
+                                const currentUbicacion = `${tipoSeleccionado}${numeroSeleccionado}${tipoSeleccionado === 'G' ? division + numeroDivision : ''
+                                    }${subdivisionSeleccionada}`;
+                                console.log("Descargando TXT para ubicación:", currentUbicacion);
 
-                                if (codigoUbicacion) {
-                                    url += `&ubicacion=${codigoUbicacion}`;
-                                } else if (division && numeroDivision) {
-                                    url += `&tipo=${tipoSeleccionado}&numero=${numeroSeleccionado}&division=${division}&numeroDivision=${numeroDivision}`;
-                                } else {
-                                    url += `&tipo=${tipoSeleccionado}&numero=${numeroSeleccionado}`;
-                                }
+                                // Armar la URL usando ese valor
+                                const url = `https://exhibicionback-production.up.railway.app/ubicaciones/txt?sucursal=${sucursalId}&ubicacion=${currentUbicacion}`;
 
                                 window.open(url, '_blank');
                             }}
@@ -441,6 +439,7 @@ const HomeSucursal = () => {
                         >
                             📥 Descargar TXT
                         </button>
+
                     </div>
 
 
@@ -467,7 +466,7 @@ const HomeSucursal = () => {
                     ) : (
                         <CargaProductos
                             enProceso={enProceso}
-                            setEnProceso={setEnProceso} 
+                            setEnProceso={setEnProceso}
                             errorProducto={errorProducto}
                             setErrorProducto={setErrorProducto}
                             codigoUbicacion={codigoUbicacion}

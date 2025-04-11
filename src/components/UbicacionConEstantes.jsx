@@ -36,7 +36,7 @@ const UbicacionConEstantes = ({ ubicacion, onActualizar, onEliminar, onReubicar,
             ))}
           </ul>
           <button onClick={handleDescargarTxt} className="descargar-btn">
-            📥 Descargar TXT
+            📥 Descargar TXT 1
           </button>
         </>
       )}
