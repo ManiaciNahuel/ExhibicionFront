@@ -37,7 +37,7 @@ const BuscarProducto = () => {
       const ubicacionesTransformadas = ubicacionesData.map((ubic) => ({
         id: ubic.id,
         nombre: producto.Producto,
-        codplex: CodPlex,
+        codplex: producto.CodPlex,
         codigo: codigoBarras,
         cantidad: ubic.cantidad,
         tipo: ubic.tipo,
