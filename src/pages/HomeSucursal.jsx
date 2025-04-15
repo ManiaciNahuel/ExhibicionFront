@@ -115,6 +115,7 @@ const HomeSucursal = () => {
                 id: p.id,
                 nombre: `${p.producto?.Producto || ''} ${p.producto?.Presentaci || ''}`.trim() || 'Sin nombre',
                 codigo: p.codebar,
+                codplex: p.codplex,
                 cantidad: p.cantidad,
                 ubicacion: codigo
             }));
@@ -128,20 +129,16 @@ const HomeSucursal = () => {
         }
     };
 
+    const normalizarCodigo = (code) => code.replace(/^0+/, '');
 
     const handleAgregarProducto = async (e) => {
         e.preventDefault();
+        // 🔧 Normalizar código si empieza con 0 y tiene 11 dígitos
+
         if (!codigoUbicacion || !codigoBarras || cantidad < 1) return;
 
         if (enProceso.has(codigoBarras)) {
             alert("⏳ Ya estás cargando este producto. Esperá un momento.");
-            return;
-        }
-
-        const existente = productosCargados.find(p => p.codigo === codigoBarras);
-        if (existente) {
-            setProductoExistente(existente);
-            setMostrarModalCantidad(true);
             return;
         }
 
@@ -152,11 +149,26 @@ const HomeSucursal = () => {
 
             const res = await axios.get(`https://exhibicionback-production.up.railway.app/productos/${codigoBarras}`);
             const producto = res.data;
-            if (!producto) {
+            if (!producto || !producto.CodPlex) {
                 setErrorProducto('Producto no encontrado');
                 return;
             }
 
+            // ✅ Verificación local en la ubicación actual por codplex
+            const yaEnUbicacionActual = productosCargados.find(
+                (p) => String(p.codplex) === String(producto.CodPlex)
+            );
+            console.log("🔎 Codplex comparación:", {
+                cargados: productosCargados.map(p => p.codplex),
+                producto: producto.CodPlex,
+            });
+
+            console.log("🔍 Verificando si ya existe en la ubicación actual:", { yaEnUbicacionActual, producto });
+            if (yaEnUbicacionActual) {
+                setProductoExistente(yaEnUbicacionActual);
+                setMostrarModalCantidad(true);
+                return;
+            }
 
             // 🧠 Descomponer ubicación correctamente
             const tipoUbicacion = codigoUbicacion.match(/^[A-Z]+/)[0];
@@ -193,6 +205,7 @@ const HomeSucursal = () => {
                 setProductoDuplicado({
                     ...producto,
                     codebar: codigoBarras,
+                    codplex: producto.CodPlex,
                     cantidad,
                     tipo: tipoUbicacion,
                     numero,
@@ -216,13 +229,15 @@ const HomeSucursal = () => {
                 letraSubdivision || null,
                 numeroSubdivision,
                 letraDivision || null,
-                numeroDivision
+                numeroDivision,
+                producto.CodPlex // ✅ pasamos codplex
             );
-            return true
+
+            return true;
         } catch (err) {
             console.error("❌ Error al asignar producto:", err);
             setErrorProducto('Producto no encontrado.');
-            return false
+            return false;
         } finally {
             setEnProceso(prev => {
                 const nuevo = new Set(prev);
@@ -234,9 +249,9 @@ const HomeSucursal = () => {
                 nuevo.delete(codigoBarras);
                 return nuevo;
             });
-
         }
     };
+
 
 
 
@@ -264,6 +279,7 @@ const HomeSucursal = () => {
                     nombre: `${producto.Producto || ''} ${producto.Presentaci || ''}`.trim() || 'Sin nombre',
                     codigo,
                     cantidad,
+                    codplex: producto.CodPlex, // 👈 clave para que funcione el find
                     ubicacion: `${tipo}${numero}${division || ''}${numeroDivision || ''}${subdivision || ''}${numeroSubdivision || ''}`
 
                 }

@@ -44,8 +44,10 @@ const CargaProductos = ({
   }, []);
 
   const handleCodigoChange = (e) => {
-    setCodigoBarras(e.target.value);
+    const limpio = e.target.value.replace(/^0+/, '');
+    setCodigoBarras(limpio);
   };
+
 
   const handleCodigoKeyPress = (e) => {
     if (e.key === 'Enter') {
