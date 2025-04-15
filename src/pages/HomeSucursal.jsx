@@ -184,7 +184,7 @@ const HomeSucursal = () => {
             const numeroSubdivision = Number.isNaN(numSub) ? null : numSub;
 
             const resCheck = await axios.get(`https://exhibicionback-production.up.railway.app/ubicaciones/check`, {
-                params: { codebar: codigoBarras, sucursalId }
+                params: { codplex: producto.CodPlex, sucursalId }
             });
 
             const yaEnOtraUbicacion = resCheck.data.find(p => p.ubicacion !== codigoUbicacion);
@@ -244,6 +244,7 @@ const HomeSucursal = () => {
         try {
             const res = await axios.post(`https://exhibicionback-production.up.railway.app/ubicaciones`, {
                 codebar: codigo,
+                codplex: producto.CodPlex,
                 tipo,
                 numero,
                 subdivision,

@@ -9,7 +9,7 @@ const BuscarProducto = () => {
   const [resultado, setResultado] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  
+
   const navigate = useNavigate();
 
   const buscarUbicaciones = async (e = null) => {
@@ -37,6 +37,7 @@ const BuscarProducto = () => {
       const ubicacionesTransformadas = ubicacionesData.map((ubic) => ({
         id: ubic.id,
         nombre: producto.Producto,
+        codplex: CodPlex,
         codigo: codigoBarras,
         cantidad: ubic.cantidad,
         tipo: ubic.tipo,
