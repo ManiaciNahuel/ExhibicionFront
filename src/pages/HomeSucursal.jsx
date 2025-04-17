@@ -284,8 +284,6 @@ const HomeSucursal = () => {
 
                 }
             ]);
-
-            setCodigoBarras('');
             setCantidad(1);
         } catch (error) {
             console.error("❌ Error al crear producto:", error);
