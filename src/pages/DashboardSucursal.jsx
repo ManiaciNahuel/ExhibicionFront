@@ -2,7 +2,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Dashboard.css'; // lo armamos luego
-import planogramaSA3 from '../assets/planogramas/sucursal3.png';
 
 const DashboardSucursal = () => {
   const navigate = useNavigate();

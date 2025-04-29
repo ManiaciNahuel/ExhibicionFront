@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import planogramaSA3 from '../assets/planogramas/sucursal3.png';
 import '../styles/HomeSucursal.css';
 import CargaProductos from '../components/CargaProductos';
 import SelectorUbicacion from '../components/SelectorUbicacion';
@@ -32,6 +31,8 @@ const HomeSucursal = () => {
     const [enProceso, setEnProceso] = useState(new Set());
 
     const sucursalId = localStorage.getItem('sucursalId');
+    const planogramaSrc = `planogramas/${sucursalId}.png`;
+    console.log(planogramaSrc);
 
     const navigate = useNavigate();
 
@@ -380,29 +381,24 @@ const HomeSucursal = () => {
                 <div style={{ flex: 1, maxWidth: '50vw', textAlign: 'center' }}>
                     <img
                         id="planograma-img"
-                        src={planogramaSA3}
+                        src={planogramaSrc}
                         alt="Planograma"
                         onClick={() => {
                             const img = document.getElementById('planograma-img');
                             if (document.fullscreenElement) {
                                 document.exitFullscreen();
                             } else {
-                                if (img.requestFullscreen) {
-                                    img.requestFullscreen();
-                                } else if (img.webkitRequestFullscreen) {
-                                    img.webkitRequestFullscreen();
-                                } else if (img.msRequestFullscreen) {
-                                    img.msRequestFullscreen();
-                                }
+                                img.requestFullscreen?.() || img.webkitRequestFullscreen?.() || img.msRequestFullscreen?.();
                             }
                         }}
                         style={{
                             width: '100%',
                             borderRadius: '8px',
                             border: '1px solid #ccc',
-                            cursor: 'pointer' // Para que se note que se puede clickear
+                            cursor: 'pointer'
                         }}
                     />
+
 
                     <div
                         style={{
