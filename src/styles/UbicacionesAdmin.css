@@ -1,0 +1,83 @@
+.ubicaciones-admin {
+    max-width: 800px;
+    margin: 2rem auto;
+    background: #fff;
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    font-family: 'Ubuntu', sans-serif;
+}
+
+.ubicaciones-admin h2 {
+    font-size: 1.25rem;
+    color: #1f1f1f;
+    margin-bottom: 1.2rem;
+    font-weight: 600;
+}
+
+.formulario {
+    margin-bottom: 2.5rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.formulario label {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 0.2rem;
+    display: block;
+}
+
+.formulario input,
+.formulario select {
+    width: 300px;
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    background-color: #fafafa;
+    transition: all 0.2s ease;
+}
+
+.formulario input:focus,
+.formulario select:focus {
+    border-color: #e3b505;
+    background-color: #fff;
+    outline: none;
+}
+
+.acciones {
+    text-align: right;
+    margin-top: 1rem;
+}
+
+.btn-verde {
+    background-color: #1f7a1f;
+    color: white;
+    padding: 0.7rem 1.4rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 0.5rem;
+    transition: background 0.2s ease;
+}
+
+.btn-verde:hover {
+    background-color: #166016;
+}
+
+.btn-azul {
+    background-color: #1d6df6;
+    color: white;
+    padding: 0.7rem 1.4rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 0.5rem;
+    transition: background 0.2s ease;
+}
+
+.btn-azul:hover {
+    background-color: #144fc9;
+}
