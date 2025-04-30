@@ -105,10 +105,6 @@ const UbicacionesAdmin = () => {
                         <input type="number" name="numeroUbicacion" value={nuevaUbicacion.numeroUbicacion} onChange={handleChange} required />
                     </div>
 
-                    <div>
-                        <label>N° de estantes</label>
-                        <input type="number" name="numeroSubdivision" value={nuevaUbicacion.numeroSubdivision} onChange={handleChange} required />
-                    </div>
 
                     {nuevaUbicacion.tipo === 'G' && (
                         <>
@@ -126,6 +122,11 @@ const UbicacionesAdmin = () => {
                             </div>
                         </>
                     )}
+
+                    <div>
+                        <label>N° de estantes</label>
+                        <input type="number" name="numeroSubdivision" value={nuevaUbicacion.numeroSubdivision} onChange={handleChange} required />
+                    </div>
 
                     <div>
                         <label>Categoría (opcional)</label>
