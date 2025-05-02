@@ -1,0 +1,83 @@
+.ubicaciones-admin {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    font-family: 'Ubuntu', sans-serif;
+}
+
+.ubicaciones-admin h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.formulario label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #1f1f1f;
+}
+
+.formulario select,
+.formulario input {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 0.4rem;
+    margin-bottom: 1rem;
+}
+
+.btn-azul {
+    background-color: #1d6df6;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    transition: background 0.2s ease;
+    margin-bottom: 1.5rem;
+}
+
+.btn-azul:hover {
+    background-color: #144fc9;
+    cursor: pointer;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.grupo-ubicaciones {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.grupo {
+    background: #fbfaf8;
+    border-left: 6px solid #e3b505;
+    padding: 1rem;
+    border-radius: 0.6rem;
+}
+
+.grupo-titulo {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.grupo-lista {
+    list-style: none;
+    padding: 0;
+}
+
+.grupo-item {
+    padding: 0.3rem 0;
+    border-bottom: 1px dashed #ccc;
+}

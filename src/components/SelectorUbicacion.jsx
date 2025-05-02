@@ -3,6 +3,7 @@ import '../styles/SelectorUbicacion.css'; // lo armamos luego
 
 const SelectorUbicacion = ({
   moviendo,
+  ubicacionesPermitidas,
   tipoSeleccionado,
   setTipoSeleccionado,
   numeroSeleccionado,
@@ -20,6 +21,24 @@ const SelectorUbicacion = ({
   if (typeof setDivision !== 'function') {
     console.error("❌ ERROR: setDivision no es una función. Valor recibido:", setDivision);
   }
+  console.log("🚀 ubicacionesPermitidas:", ubicacionesPermitidas);
+  const divisionesDisponibles = tipoSeleccionado === 'G' && numeroSeleccionado
+    ? ubicacionesPermitidas
+      .filter(u =>
+        u.tipo === 'G' &&
+        u.numeroUbicacion === parseInt(numeroSeleccionado)
+      )
+      .map(u => ({
+        value: `${u.division}${u.numeroDivision}`,
+        label: `${u.division === 'P' ? 'Puntera' : 'Lado'} ${u.numeroDivision}`,
+        division: u.division,
+        numeroDivision: u.numeroDivision
+      }))
+      .filter((item, index, self) =>
+        index === self.findIndex(i => i.value === item.value)
+      )
+    : [];
+
   return (
 
 
@@ -68,32 +87,24 @@ const SelectorUbicacion = ({
       {tipoSeleccionado === 'G' && numeroSeleccionado && (
         <div className="division-selector">
           <h4>División de Góndola:</h4>
-          {[
-            { label: 'Puntera 1', value: 'P1' },
-            { label: 'Puntera 2', value: 'P2' },
-            { label: 'Lado 1', value: 'L1' },
-            { label: 'Lado 2', value: 'L2' },
-          ].map(({ label, value }) => (
+          {divisionesDisponibles.map(({ label, value, division: div, numeroDivision: numDiv }) => (
             <button
               key={value}
-              className={`division-btn ${division === value[0] && numeroDivision === parseInt(value[1]) ? 'activo' : ''}`}
+              className={`division-btn ${division === div && numeroDivision === numDiv ? 'activo' : ''}`}
               onClick={(e) => {
                 e.preventDefault();
-                if (typeof setDivision === 'function') {
-                  setDivision(value[0]); // 'P' o 'L'
-                } else {
-                  console.error("setDivision no está definida como función");
-                }
-                setNumeroDivision(parseInt(value[1])); // 1 o 2
+                setDivision(div);
+                setNumeroDivision(numDiv);
                 setSubdivisionSeleccionada('');
               }}
-
             >
               {label}
             </button>
           ))}
+
         </div>
       )}
+
 
       {(tipoSeleccionado === 'M' && numeroSeleccionado) ||
         (tipoSeleccionado === 'G' && numeroSeleccionado && division && numeroDivision) ? (

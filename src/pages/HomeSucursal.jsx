@@ -456,6 +456,7 @@ const HomeSucursal = () => {
 
                     {!ubicacionConfirmada ? (
                         <SelectorUbicacion
+                            ubicacionesPermitidas={ubicacionesPermitidas}
                             codigoUbicacion={codigoUbicacion}
                             setUbicacionConfirmada={setUbicacionConfirmada}
                             ubicacionConfirmada={ubicacionConfirmada}

@@ -1,6 +1,7 @@
 // src/pages/VerUbicacionesAdmin.jsx
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import '../styles/VerUbicacionesAdmin.css';
 
 const BASE_URL = 'https://exhibicionback-production.up.railway.app';
 
@@ -39,10 +40,10 @@ const VerUbicacionesAdmin = () => {
 
     return (
         <div className="ubicaciones-admin">
-            <h2>🔎 Ver ubicaciones permitidas por sucursal</h2>
+            <h2 className="mb-6">🔎 Ver ubicaciones permitidas por sucursal</h2>
 
-            <div className="formulario">
-                <label>Seleccionar sucursal</label>
+            <div className="formulario mb-6">
+                <label className="mb-2 block">Seleccionar sucursal</label>
                 <select
                     className="w-full border p-2 mb-4"
                     value={sucursalId}
@@ -57,16 +58,16 @@ const VerUbicacionesAdmin = () => {
 
                 {ubicaciones.length > 0 && (
                     <div className="form-grid mb-6">
-                        <div>
-                            <label>Filtrar por tipo</label>
+                        <div className="mb-4">
+                            <label className="mb-2 block">Filtrar por tipo</label>
                             <select className="w-full border p-2" value={filtroTipo} onChange={e => setFiltroTipo(e.target.value)}>
                                 <option value="">Todos</option>
                                 <option value="G">Góndola</option>
                                 <option value="M">Módulo</option>
                             </select>
                         </div>
-                        <div>
-                            <label>Filtrar por número</label>
+                        <div className="mb-4">
+                            <label className="mb-2 block">Filtrar por número</label>
                             <input
                                 className="w-full border p-2"
                                 type="number"
@@ -77,7 +78,6 @@ const VerUbicacionesAdmin = () => {
                         </div>
                     </div>
                 )}
-
             </div>
 
             {ubicacionesFiltradas.length > 0 && (
@@ -90,7 +90,7 @@ const VerUbicacionesAdmin = () => {
                             return acc;
                         }, {})
                     ).map(([clave, grupo], index) => (
-                        <div key={index} className="grupo">
+                        <div key={index} className="grupo mb-4">
                             <h4 className="grupo-titulo">📦 {grupo[0].tipo} {grupo[0].numeroUbicacion}</h4>
                             <ul className="grupo-lista">
                                 {grupo.map((u, i) => (
