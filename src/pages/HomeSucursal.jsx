@@ -461,7 +461,7 @@ const HomeSucursal = () => {
                                     saveAs(blob, data.nombreArchivo);
 
                                 } catch (err) {
-                                    console.error("❌ Error al descargar archivo TXT:", err);
+                                    console.error("❌ Error al descargar archivo TXT: ", err);
                                     alert("Error al generar el archivo. Por favor intentá nuevamente.");
                                 }
                             }}
