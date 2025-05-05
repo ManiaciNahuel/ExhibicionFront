@@ -198,7 +198,7 @@ const UbicacionesAdmin = () => {
                 {tipo === 'G' && numerosSeleccionados.size > 0 && (
                     <div className="selector-divisiones">
                         <h3>Divisiones disponibles:</h3>
-                        {['L', 'P'].flatMap(d => [1, 2].map(num => `${d}-${num}`)).map(dkey => (
+                        {['L', 'P'].flatMap(d => [1, 2, 3, 4, 5, 6].map(num => `${d}-${num}`)).map(dkey => (
                             <button
                                 key={dkey}
                                 className={`division-btn ${divisionesSeleccionadas.has(dkey) ? 'activo' : ''}`}
