@@ -87,20 +87,22 @@ const SelectorUbicacion = ({
       {tipoSeleccionado === 'G' && numeroSeleccionado && (
         <div className="division-selector">
           <h4>División de Góndola:</h4>
-          {divisionesDisponibles.map(({ label, value, division: div, numeroDivision: numDiv }) => (
-            <button
-              key={value}
-              className={`division-btn ${division === div && numeroDivision === numDiv ? 'activo' : ''}`}
-              onClick={(e) => {
-                e.preventDefault();
-                setDivision(div);
-                setNumeroDivision(numDiv);
-                setSubdivisionSeleccionada('');
-              }}
-            >
-              {label}
-            </button>
-          ))}
+          {[...divisionesDisponibles]
+            .sort((a, b) => a.label.localeCompare(b.label))
+            .map(({ label, value, division: div, numeroDivision: numDiv }) => (
+              <button
+                key={value}
+                className={`division-btn ${division === div && numeroDivision === numDiv ? 'activo' : ''}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setDivision(div);
+                  setNumeroDivision(numDiv);
+                  setSubdivisionSeleccionada('');
+                }}
+              >
+                {label}
+              </button>
+            ))}
 
         </div>
       )}
