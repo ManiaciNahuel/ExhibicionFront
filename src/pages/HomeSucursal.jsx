@@ -32,7 +32,6 @@ const HomeSucursal = () => {
 
     const sucursalId = localStorage.getItem('sucursalId');
     const planogramaSrc = `planogramas/${sucursalId}.png`;
-    console.log(planogramaSrc);
 
     const navigate = useNavigate();
 

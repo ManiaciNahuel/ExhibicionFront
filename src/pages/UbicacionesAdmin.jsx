@@ -28,6 +28,9 @@ const UbicacionesAdmin = () => {
         }
     }, [sucursalSeleccionada]);
 
+    const planogramaSrc = sucursalSeleccionada ? `/planogramas/${sucursalSeleccionada.id}.png` : '';
+
+
     const handleToggleSet = (setState, value) => {
         setState(prev => {
             const nuevo = new Set(prev);
@@ -146,8 +149,29 @@ const UbicacionesAdmin = () => {
 
     return (
         <div className="ubicaciones-admin">
+
             <div className="lado-izquierdo">
                 <h2>📍 Crear ubicaciones visualmente</h2>
+                {sucursalSeleccionada && (
+                    <img
+                        id="planograma-img"
+                        src={planogramaSrc}
+                        alt="Planograma"
+                        onClick={() => {
+                            const img = document.getElementById('planograma-img');
+                            if (document.fullscreenElement) {
+                                document.exitFullscreen();
+                            } else {
+                                img.requestFullscreen?.() || img.webkitRequestFullscreen?.() || img.msRequestFullscreen?.();
+                            }
+                        }}
+                        style={{
+                            width: '100px',
+                            borderRadius: '8px',
+                            border: '1px solid #ccc',
+                            cursor: 'pointer'
+                        }}
+                    />)}
                 <div className="form-grid">
                     <div>
                         <label>Sucursal</label>
