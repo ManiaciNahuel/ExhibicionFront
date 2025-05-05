@@ -66,6 +66,8 @@ const HomeSucursal = () => {
                 const data = res.data.map(u => ({
                     tipo: u.tipo,
                     numeroUbicacion: u.numeroUbicacion,
+                    division: u.division,
+                    numeroDivision: u.numeroDivision,
                     subdivision: u.subdivision,
                     numeroSubdivision: u.numeroSubdivision,
                     categoria: u.categoria || 'Sin categoría',
