@@ -15,7 +15,8 @@
 
 .boton-centrado {
   display: block;
-  margin: 1rem auto; /* Centrado horizontal */
+  margin: 1rem auto;
+  /* Centrado horizontal */
   padding: 0.6rem 1.1rem;
   font-size: 0.8rem;
   border-radius: 6px;
@@ -80,4 +81,21 @@
   background-color: #fbfaf8;
   border-left: 5px solid #f6511d;
   border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+  .boton-flotante-txt {
+    position: relative !important;
+    top: 0rem !important;
+  }
+
+  .carga-page {
+    flex-direction: column;
+  }
+
+  .carga-page div {
+    max-width: 100% !important;
+    height: auto;
+  }
+
 }

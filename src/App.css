@@ -32,7 +32,28 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+
+  body,
+  html {
+    padding: 0;
+    margin: 0;
+  }
+
+  .carga-page {
+    flex-direction: column;
+  }
+
+  .main-container {
+    width: 100vw;
+    max-width: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
   }
 }
