@@ -9,12 +9,9 @@ const AdminDashboard = () => {
         <div className="ubicaciones-admin">
             <h2>🛠 Panel de Administrador</h2>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '2rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '60px' }}>
                 <button onClick={() => navigate('/admin/ubicaciones')} className="btn-verde">
                     ➕ Cargar ubicaciones permitidas
-                </button>
-                <button onClick={() => navigate('/admin/ver-ubicaciones')} className="btn-azul">
-                    🔍 Ver ubicaciones por sucursal
                 </button>
             </div>
         </div>

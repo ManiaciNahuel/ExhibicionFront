@@ -56,11 +56,6 @@ const App = () => {
               path="/admin/ubicaciones"
               element={<PrivateRoute isAuthenticated={!!usuario} element={<UbicacionesAdmin />} />}
             />
-            <Route
-              path="/admin/ver-ubicaciones"
-              element={<PrivateRoute isAuthenticated={!!usuario} element={<VerUbicacionesAdmin />} />}
-            />
-
           </>
         ) : (
           <>
