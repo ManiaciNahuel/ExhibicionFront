@@ -4,7 +4,7 @@ import '../styles/HomeSucursal.css';
 import CargaProductos from '../components/CargaProductos';
 import SelectorUbicacion from '../components/SelectorUbicacion';
 import { useNavigate } from 'react-router-dom';
-
+import { saveAs } from 'file-saver';
 
 const HomeSucursal = () => {
     const [tipoSeleccionado, setTipoSeleccionado] = useState('');
@@ -436,16 +436,34 @@ const HomeSucursal = () => {
                     <h2 className='titulo-home'>📦 Carga de Productos por Ubicación</h2>
                     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
                         <button
-                            onClick={() => {
-                                // Construir la ubicación actual según la selección
+                            onClick={async () => {
                                 const currentUbicacion = `${tipoSeleccionado}${numeroSeleccionado}${tipoSeleccionado === 'G' ? division + numeroDivision : ''
                                     }${subdivisionSeleccionada}`;
-                                console.log("Descargando TXT para ubicación:", currentUbicacion);
 
-                                // Armar la URL usando ese valor
-                                const url = `https://exhibicionback-production.up.railway.app/ubicaciones/txt?sucursal=${sucursalId}&ubicacion=${currentUbicacion}`;
+                                console.log("📥 Descargando TXT para ubicación:", currentUbicacion);
 
-                                window.open(url, '_blank');
+                                try {
+                                    const response = await fetch(
+                                        `https://exhibicionback-production.up.railway.app/ubicaciones/txt-info?sucursal=${sucursalId}&ubicacion=${currentUbicacion}`
+                                    );
+
+                                    const data = await response.json();
+
+                                    if (!response.ok) throw new Error(data.error || 'Error desconocido');
+
+                                    // Mostrar aviso si hay códigos omitidos
+                                    if (data.omitidos && data.omitidos.length > 0) {
+                                        alert(`⚠️ Se omitieron ${data.omitidos.length} códigos alfanuméricos:\n\n${data.omitidos.join('\n')}`);
+                                    }
+
+                                    // Crear Blob y descargar
+                                    const blob = new Blob([data.archivo], { type: 'text/plain;charset=utf-8' });
+                                    saveAs(blob, data.nombreArchivo);
+
+                                } catch (err) {
+                                    console.error("❌ Error al descargar archivo TXT:", err);
+                                    alert("Error al generar el archivo. Por favor intentá nuevamente.");
+                                }
                             }}
                             className="boton-flotante-txt"
                         >
