@@ -6,238 +6,191 @@ import '../styles/UbicacionesAdmin.css';
 const BASE_URL = 'https://exhibicionback-production.up.railway.app';
 
 const UbicacionesAdmin = () => {
-    const [estructura, setEstructura] = useState({
-        idSucursal: '',
-        sucursal: '',
-        tipo: 'G'
-    });
-
-    const [divisionesForm, setDivisionesForm] = useState({
-        desde: 1,
-        hasta: 1,
-        lados: 0,
-        estantesPorLado: 0,
-        punteras: 0,
-        estantesPorPuntera: 0,
-        estantesModulo: 0
-    });
-
     const [sucursales, setSucursales] = useState([]);
-    const [cargando, setCargando] = useState(false);
-    const [resumen, setResumen] = useState([]);
     const [ubicacionesPermitidas, setUbicacionesPermitidas] = useState([]);
-    const [resumenEstructura, setResumenEstructura] = useState([]);
+    const [sucursalSeleccionada, setSucursalSeleccionada] = useState(null);
+    const [tipo, setTipo] = useState('G');
+    const [numerosSeleccionados, setNumerosSeleccionados] = useState(new Set());
+    const [divisionesSeleccionadas, setDivisionesSeleccionadas] = useState(new Set());
+    const [subdivisionesSeleccionadas, setSubdivisionesSeleccionadas] = useState(new Set());
 
     useEffect(() => {
-        axios.get(`${BASE_URL}/sucursales`)
-            .then(res => setSucursales(res.data))
-            .catch(err => console.error('Error al cargar sucursales', err));
+        axios.get(`${BASE_URL}/sucursales`).then(res => setSucursales(res.data));
     }, []);
 
     useEffect(() => {
-        if (estructura.idSucursal) {
+        if (sucursalSeleccionada) {
             axios.get(`${BASE_URL}/ubicaciones/permitidas`, {
-                params: { sucursalId: estructura.idSucursal }
-            })
-                .then(res => {
-                    const data = res.data.map(u => ({
-                        tipo: u.tipo,
-                        numeroUbicacion: Number(u.numeroUbicacion),
-                        subdivision: u.subdivision,
-                        numeroSubdivision: Number(u.numeroSubdivision),
-                        division: u.division,
-                        numeroDivision: u.numeroDivision !== null ? Number(u.numeroDivision) : null,
-                        codigo: `${u.tipo}${u.numeroUbicacion}${u.division || ''}${u.numeroDivision || ''}${u.subdivision || ''}${u.numeroSubdivision || ''}`,
-                    }));
-                    setUbicacionesPermitidas(data);
-                })
-                .catch(err => console.error('Error al cargar ubicaciones permitidas', err));
+                params: { sucursalId: sucursalSeleccionada.id }
+            }).then(res => setUbicacionesPermitidas(res.data));
         } else {
             setUbicacionesPermitidas([]);
         }
-    }, [estructura.idSucursal]);
+    }, [sucursalSeleccionada]);
 
-    const handleEstructuraChange = (e) => {
-        setEstructura({ ...estructura, [e.target.name]: e.target.value });
-    };
-
-    const handleDivisionesChange = (e) => {
-        setDivisionesForm({ ...divisionesForm, [e.target.name]: e.target.value });
-    };
-
-    const calcularResumen = () => {
-        const nuevoResumen = [];
-        const desde = parseInt(divisionesForm.desde);
-        const hasta = parseInt(divisionesForm.hasta);
-        for (let i = desde; i <= hasta; i++) {
-            if (estructura.tipo === 'G') {
-                for (let d = 1; d <= divisionesForm.lados; d++) {
-                    nuevoResumen.push(`G${i} - Lado ${d} (${divisionesForm.estantesPorLado} estantes)`);
-                }
-                for (let d = 1; d <= divisionesForm.punteras; d++) {
-                    nuevoResumen.push(`G${i} - Puntera ${d} (${divisionesForm.estantesPorPuntera} estantes)`);
-                }
+    const handleToggleSet = (setState, value) => {
+        setState(prev => {
+            const nuevo = new Set(prev);
+            if (nuevo.has(value)) {
+                nuevo.delete(value);
             } else {
-                nuevoResumen.push(`M${i} (${divisionesForm.estantesModulo} estantes)`);
+                nuevo.add(value);
             }
-        }
-        setResumen(nuevoResumen);
+            return nuevo;
+        });
     };
 
-    const handleAsignarDivisiones = async (e) => {
-        e.preventDefault();
-        setCargando(true);
-        try {
-            await axios.post(`${BASE_URL}/ubicaciones/permitidas/divisiones`, {
-                idSucursal: estructura.idSucursal,
-                sucursal: estructura.sucursal,
-                tipo: estructura.tipo,
-                ...divisionesForm
-            });
-            alert('Ubicaciones creadas correctamente');
-        } catch (err) {
-            console.error('Error al asignar divisiones:', err);
-            alert('Error al crear ubicaciones');
-        } finally {
-            setCargando(false);
-        }
-    };
-
-    useEffect(() => {
-        const resumenAgrupado = {};
-        for (const u of ubicacionesPermitidas.filter(u => u.tipo === estructura.tipo)) {
-            const clave = `${u.tipo}${u.numeroUbicacion}`;
-            if (!resumenAgrupado[clave]) resumenAgrupado[clave] = [];
-            resumenAgrupado[clave].push(u);
-        }
-
-        const resumenFinal = Object.entries(resumenAgrupado).map(([clave, grupo]) => {
-            if (estructura.tipo === 'G') {
-                const lados = grupo.filter(u => u.division === 'L');
-                const punteras = grupo.filter(u => u.division === 'P');
-
-                const contar = (arr) => {
-                    const mapa = {};
-                    for (const item of arr) {
-                        const n = item.numeroDivision;
-                        if (!mapa[n]) mapa[n] = 0;
-                        mapa[n]++;
-                    }
-                    const partes = Object.entries(mapa).map(([num, count]) => `${count} est. en ${arr[0]?.division === 'L' ? 'Lado' : 'Punt.'} ${num}`);
-                    return partes.join(', ');
-                };
-
-                return `${clave} → ${lados.length ? contar(lados) : ''} ${punteras.length ? `| ${contar(punteras)}` : ''}`;
+    const crearUbicaciones = async () => {
+        const datos = [];
+        numerosSeleccionados.forEach(numero => {
+            if (tipo === 'M') {
+                subdivisionesSeleccionadas.forEach(sub => {
+                    const [subdivision, numeroSubdivision] = sub.split('-');
+                    datos.push({
+                        idSucursal: sucursalSeleccionada.id,
+                        sucursal: sucursalSeleccionada.nombre,
+                        tipo,
+                        numeroUbicacion: parseInt(numero),
+                        division: null,
+                        numeroDivision: null,
+                        subdivision,
+                        numeroSubdivision: parseInt(numeroSubdivision)
+                    });
+                });
             } else {
-                const cantidad = grupo.length;
-                return `${clave} → ${cantidad} estantes`;
+                divisionesSeleccionadas.forEach(div => {
+                    const [division, numeroDivision] = div.split('-');
+                    subdivisionesSeleccionadas.forEach(sub => {
+                        const [subdivision, numeroSubdivision] = sub.split('-');
+                        datos.push({
+                            idSucursal: sucursalSeleccionada.id,
+                            sucursal: sucursalSeleccionada.nombre,
+                            tipo,
+                            numeroUbicacion: parseInt(numero),
+                            division,
+                            numeroDivision: parseInt(numeroDivision),
+                            subdivision,
+                            numeroSubdivision: parseInt(numeroSubdivision)
+                        });
+                    });
+                });
             }
         });
 
-        setResumenEstructura(resumenFinal);
-    }, [estructura.tipo, ubicacionesPermitidas]);
+        try {
+            await axios.post(`${BASE_URL}/ubicaciones/permitidas/crear`, datos);
+            alert('Ubicaciones creadas correctamente');
+            setNumerosSeleccionados(new Set());
+            setDivisionesSeleccionadas(new Set());
+            setSubdivisionesSeleccionadas(new Set());
+        } catch (err) {
+            console.error('❌ Error al crear ubicaciones', err);
+            alert('Error al crear ubicaciones');
+        }
+    };
 
     return (
         <div className="ubicaciones-admin">
-            <h2>📍 Crear ubicaciones permitidas</h2>
-            <form onSubmit={handleAsignarDivisiones} className="formulario">
-                <div className="form-grid">
-                    <div>
-                        <label>Sucursal</label>
-                        <select
-                            name="idSucursal"
-                            value={estructura.idSucursal}
-                            onChange={(e) => {
-                                const selected = sucursales.find(s => s.id === parseInt(e.target.value));
-                                setEstructura({
-                                    ...estructura,
-                                    idSucursal: selected.id,
-                                    sucursal: selected.nombre
-                                });
-                            }}
-                            required
-                        >
-                            <option value="">Seleccionar...</option>
-                            {sucursales.map(s => (
-                                <option key={s.id} value={s.id}>{s.nombre}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div>
-                        <label>Tipo de ubicación</label>
-                        <select name="tipo" value={estructura.tipo} onChange={handleEstructuraChange}>
-                            <option value="G">Góndola</option>
-                            <option value="M">Módulo</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label>Desde número</label>
-                        <input type="number" name="desde" value={divisionesForm.desde} onChange={handleDivisionesChange} min={1} required />
-                    </div>
-
-                    <div>
-                        <label>Hasta número</label>
-                        <input type="number" name="hasta" value={divisionesForm.hasta} onChange={handleDivisionesChange} min={1} required />
-                    </div>
-
-                    {estructura.tipo === 'G' ? (
-                        <>
-                            <div>
-                                <label>Cantidad de lados</label>
-                                <input type="number" name="lados" value={divisionesForm.lados} onChange={handleDivisionesChange} min={0} />
-                            </div>
-                            <div>
-                                <label>Estantes por lado</label>
-                                <input type="number" name="estantesPorLado" value={divisionesForm.estantesPorLado} onChange={handleDivisionesChange} min={0} />
-                            </div>
-                            <div>
-                                <label>Cantidad de punteras</label>
-                                <input type="number" name="punteras" value={divisionesForm.punteras} onChange={handleDivisionesChange} min={0} />
-                            </div>
-                            <div>
-                                <label>Estantes por puntera</label>
-                                <input type="number" name="estantesPorPuntera" value={divisionesForm.estantesPorPuntera} onChange={handleDivisionesChange} min={0} />
-                            </div>
-                        </>
-                    ) : (
-                        <div>
-                            <label>Estantes por módulo</label>
-                            <input type="number" name="estantesModulo" value={divisionesForm.estantesModulo} onChange={handleDivisionesChange} min={0} />
-                        </div>
-                    )}
+            <h2>📍 Crear ubicaciones visualmente</h2>
+            <div className="form-grid">
+                <div>
+                    <label>Sucursal</label>
+                    <select
+                        onChange={(e) => {
+                            const selected = sucursales.find(s => s.id === parseInt(e.target.value));
+                            setSucursalSeleccionada(selected);
+                            setNumerosSeleccionados(new Set());
+                            setDivisionesSeleccionadas(new Set());
+                            setSubdivisionesSeleccionadas(new Set());
+                        }}
+                    >
+                        <option value="">Seleccionar...</option>
+                        {sucursales.map(s => (
+                            <option key={s.id} value={s.id}>{s.nombre}</option>
+                        ))}
+                    </select>
                 </div>
+                <div>
+                    <label>Tipo</label>
+                    <select value={tipo} onChange={(e) => {
+                        setTipo(e.target.value);
+                        setNumerosSeleccionados(new Set());
+                        setDivisionesSeleccionadas(new Set());
+                        setSubdivisionesSeleccionadas(new Set());
+                    }}>
+                        <option value="G">Góndola</option>
+                        <option value="M">Módulo</option>
+                    </select>
+                </div>
+            </div>
 
+            {sucursalSeleccionada && (
+                <div className="selector-numeros">
+                    <h3>Números disponibles:</h3>
+                    {[...Array(50).keys()].map(i => i + 1).map(n => (
+                        <button
+                            key={n}
+                            className={`numero-btn ${numerosSeleccionados.has(String(n)) ? 'activo' : ''}`}
+                            onClick={() => handleToggleSet(setNumerosSeleccionados, String(n))}
+                        >
+                            {n}
+                        </button>
+                    ))}
+                </div>
+            )}
+
+            {tipo === 'G' && numerosSeleccionados.size > 0 && (
+                <div className="selector-divisiones">
+                    <h3>Divisiones disponibles:</h3>
+                    {['L', 'P'].flatMap(d => [1, 2].map(num => `${d}-${num}`)).map(dkey => (
+                        <button
+                            key={dkey}
+                            className={`division-btn ${divisionesSeleccionadas.has(dkey) ? 'activo' : ''}`}
+                            onClick={() => handleToggleSet(setDivisionesSeleccionadas, dkey)}
+                        >
+                            {dkey.startsWith('L') ? `Lado ${dkey.split('-')[1]}` : `Puntera ${dkey.split('-')[1]}`}
+                        </button>
+                    ))}
+                </div>
+            )}
+
+            {((tipo === 'M' && numerosSeleccionados.size > 0) || (tipo === 'G' && divisionesSeleccionadas.size > 0)) && (
+                <div className="selector-subdivisiones">
+                    <h3>Estantes / filas:</h3>
+                    {[...Array(10).keys()].map(i => `E-${i + 1}`).map(skey => (
+                        <button
+                            key={skey}
+                            className={`subdivision-btn ${subdivisionesSeleccionadas.has(skey) ? 'activo' : ''}`}
+                            onClick={() => handleToggleSet(setSubdivisionesSeleccionadas, skey)}
+                        >
+                            {skey.replace('-', '')}
+                        </button>
+                    ))}
+                </div>
+            )}
+
+            {seleccionResumen(tipo, numerosSeleccionados, divisionesSeleccionadas, subdivisionesSeleccionadas)}
+
+            {subdivisionesSeleccionadas.size > 0 && (
                 <div className="acciones">
-                    <button type="button" className="btn-verde" onClick={calcularResumen}>📊 Ver resumen</button>
-                    <button type="submit" className="btn-azul" disabled={cargando}>
-                        {cargando ? '⏳ Asignando...' : '📥 Crear ubicaciones'}
+                    <button className="btn-verde" onClick={crearUbicaciones}>
+                        ✅ Crear ubicaciones seleccionadas
                     </button>
                 </div>
-            </form>
-
-            {resumen.length > 0 && (
-                <div className="resumen-preview">
-                    <h3>🧾 Ubicaciones a crear:</h3>
-                    <ul>
-                        {resumen.map((linea, i) => (
-                            <li key={i}>{linea}</li>
-                        ))}
-                    </ul>
-                </div>
             )}
+        </div>
+    );
+};
 
-            {resumenEstructura.length > 0 && (
-                <div className="resumen-preview">
-                    <h3>📌 Estructura existente en esta sucursal:</h3>
-                    <ul>
-                        {resumenEstructura.map((linea, i) => (
-                            <li key={i}>{linea}</li>
-                        ))}
-                    </ul>
-                </div>
-            )}
+const seleccionResumen = (tipo, numeros, divisiones, subdivisiones) => {
+    if (numeros.size === 0) return null;
+    return (
+        <div className="resumen-seleccion">
+            <h4>🔍 Resumen de selección:</h4>
+            <p><strong>Tipo:</strong> {tipo === 'G' ? 'Góndola' : 'Módulo'}</p>
+            <p><strong>Números seleccionados:</strong> {[...numeros].join(', ')}</p>
+            {tipo === 'G' && <p><strong>Divisiones seleccionadas:</strong> {[...divisiones].map(d => d.replace('-', ' ')).join(', ')}</p>}
+            <p><strong>Estantes seleccionados:</strong> {[...subdivisiones].map(s => s.replace('-', '')).join(', ')}</p>
         </div>
     );
 };
