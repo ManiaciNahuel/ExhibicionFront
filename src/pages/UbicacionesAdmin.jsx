@@ -152,26 +152,6 @@ const UbicacionesAdmin = () => {
 
             <div className="lado-izquierdo">
                 <h2>📍 Crear ubicaciones visualmente</h2>
-                {sucursalSeleccionada && (
-                    <img
-                        id="planograma-img"
-                        src={planogramaSrc}
-                        alt="Planograma"
-                        onClick={() => {
-                            const img = document.getElementById('planograma-img');
-                            if (document.fullscreenElement) {
-                                document.exitFullscreen();
-                            } else {
-                                img.requestFullscreen?.() || img.webkitRequestFullscreen?.() || img.msRequestFullscreen?.();
-                            }
-                        }}
-                        style={{
-                            width: '100px',
-                            borderRadius: '8px',
-                            border: '1px solid #ccc',
-                            cursor: 'pointer'
-                        }}
-                    />)}
                 <div className="form-grid">
                     <div>
                         <label>Sucursal</label>
@@ -201,6 +181,28 @@ const UbicacionesAdmin = () => {
                             <option value="G">Góndola</option>
                             <option value="M">Módulo</option>
                         </select>
+                    </div>
+                    <div>
+                        {sucursalSeleccionada && (
+                            <img
+                                id="planograma-img"
+                                src={planogramaSrc}
+                                alt="Planograma"
+                                onClick={() => {
+                                    const img = document.getElementById('planograma-img');
+                                    if (document.fullscreenElement) {
+                                        document.exitFullscreen();
+                                    } else {
+                                        img.requestFullscreen?.() || img.webkitRequestFullscreen?.() || img.msRequestFullscreen?.();
+                                    }
+                                }}
+                                style={{
+                                    width: '150px',
+                                    borderRadius: '8px',
+                                    border: '1px solid #ccc',
+                                    cursor: 'pointer'
+                                }}
+                            />)}
                     </div>
                 </div>
 
