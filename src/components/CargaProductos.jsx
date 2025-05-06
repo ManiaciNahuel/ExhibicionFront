@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import ProductoEnUbicacion from './ProductoEnUbicacion';
 import ModalEditarCantidad from './ModalEditarCantidad';
 import ModalProductoEnOtraUbicacion from './ModalProductoEnOtraUbicacion';
-import '../styles/CargaProductos.css'
+import '../styles/CargaProductos.css';
 
 const CargaProductos = ({
   enProceso,
@@ -37,6 +37,8 @@ const CargaProductos = ({
   const inputCantidadRef = useRef(null);
   const [cargando, setCargando] = useState(false);
 
+  const esMobile = /Mobi|Android/i.test(navigator.userAgent);
+
   useEffect(() => {
     if (inputCodigoRef.current) {
       inputCodigoRef.current.focus();
@@ -47,7 +49,6 @@ const CargaProductos = ({
     const limpio = e.target.value.replace(/^0+/, '');
     setCodigoBarras(limpio);
   };
-
 
   const handleCodigoKeyPress = (e) => {
     if (e.key === 'Enter') {
@@ -73,17 +74,26 @@ const CargaProductos = ({
     setCargando(false);
   };
 
-
   useEffect(() => {
     if (errorProducto) {
       const timer = setTimeout(() => {
         setErrorProducto('');
-      }, 4000); // 4 segundos
-
-      return () => clearTimeout(timer); // Limpia el timer si el componente se desmonta
+      }, 4000);
+      return () => clearTimeout(timer);
     }
   }, [errorProducto]);
 
+  const renderTecladoNumerico = () => (
+    <div className="teclado-numerico">
+      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((n) => (
+        <button key={n} onClick={() => setCantidad((prev) => parseInt(`${prev || ''}${n}`))}>
+          {n}
+        </button>
+      ))}
+      <button onClick={() => setCantidad((prev) => Math.floor(prev / 10))}>←</button>
+      <button onClick={() => setCantidad(1)}>Reset</button>
+    </div>
+  );
 
   return (
     <div>
@@ -91,14 +101,12 @@ const CargaProductos = ({
         <h3>
           📍 Ubicación actual: <span> {codigoUbicacion} </span>
         </h3>
-
         <button onClick={() => setUbicacionConfirmada(false)} className='cambiar-ubicacion'>
           🔄 Cambiar ubicación
         </button>
       </div>
 
       <form onSubmit={handleAgregarProductoWrapper} style={{ padding: '1rem 0rem 0rem', borderTop: '3px solid #ccc' }}>
-
         <label>📦 Escaneá o escribí el código del producto:</label><br />
         <div className='container-agregar'>
           <input
@@ -135,9 +143,11 @@ const CargaProductos = ({
               </div>
             )}
           </div>
-
         </div>
+
+        {esMobile && renderTecladoNumerico()}
       </form>
+
       {errorProducto && (
         <div
           style={{
@@ -152,7 +162,6 @@ const CargaProductos = ({
           ⚠️ {errorProducto}
         </div>
       )}
-
 
       {loading && <p>⏳ Cargando productos...</p>}
 

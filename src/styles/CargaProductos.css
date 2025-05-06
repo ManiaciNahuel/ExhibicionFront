@@ -112,6 +112,39 @@
     text-align: center;
 }
 
+.teclado-virtual {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.tecla {
+    width: 60px;
+    height: 60px;
+    font-size: 1.4rem;
+    font-weight: bold;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    background-color: #f4f4f4;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.tecla:hover {
+    background-color: #ddd;
+}
+
+.tecla-borrar {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.tecla-borrar:hover {
+    background-color: #f5c6cb;
+}
 
 @media (max-width: 768px) {
     .container-agregar {
