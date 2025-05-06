@@ -122,19 +122,23 @@ const CargaProductos = ({
           />
 
           <input
-            type="number"
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
             value={cantidad}
             ref={inputCantidadRef}
             onChange={(e) => {
-              setCantidad(parseInt(e.target.value));
+              const soloNumeros = e.target.value.replace(/\D/g, '');
+              setCantidad(parseInt(soloNumeros || '1'));
               setErrorProducto('');
             }}
             onKeyDown={handleCantidadKeyPress}
-            min="1"
             required
             className="input-cantidad"
             style={{ marginRight: '1rem' }}
           />
+
+
           <div className="grupo-boton-agregar">
             <button type="submit" className="boton-agregar">Agregar</button>
             {enProceso.size > 0 && (
