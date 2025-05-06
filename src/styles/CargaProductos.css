@@ -112,6 +112,38 @@
     text-align: center;
 }
 
+.teclado-numerico-simulado {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    align-items: center;
+}
+
+.fila-teclado {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+.fila-teclado button {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+    border: none;
+    border-radius: 12px;
+    background-color: #f0f0f0;
+    color: #1f1f1f;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.2s ease;
+}
+
+.fila-teclado button:active {
+    background-color: #e3b505;
+    color: white;
+}
+
 .teclado-virtual {
     display: flex;
     flex-wrap: wrap;

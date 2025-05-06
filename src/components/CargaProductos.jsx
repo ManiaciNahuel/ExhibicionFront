@@ -84,14 +84,27 @@ const CargaProductos = ({
   }, [errorProducto]);
 
   const renderTecladoNumerico = () => (
-    <div className="teclado-numerico">
-      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map((n) => (
-        <button key={n} onClick={() => setCantidad((prev) => parseInt(`${prev || ''}${n}`))}>
-          {n}
-        </button>
-      ))}
-      <button onClick={() => setCantidad((prev) => Math.floor(prev / 10))}>←</button>
-      <button onClick={() => setCantidad(1)}>Reset</button>
+    <div className="teclado-numerico-simulado">
+      <div className="fila-teclado">
+        {[1, 2, 3].map((n) => (
+          <button key={n} onClick={() => setCantidad((prev) => parseInt(`${prev || ''}${n}`))}>{n}</button>
+        ))}
+      </div>
+      <div className="fila-teclado">
+        {[4, 5, 6].map((n) => (
+          <button key={n} onClick={() => setCantidad((prev) => parseInt(`${prev || ''}${n}`))}>{n}</button>
+        ))}
+      </div>
+      <div className="fila-teclado">
+        {[7, 8, 9].map((n) => (
+          <button key={n} onClick={() => setCantidad((prev) => parseInt(`${prev || ''}${n}`))}>{n}</button>
+        ))}
+      </div>
+      <div className="fila-teclado">
+        <button onClick={() => setCantidad((prev) => Math.floor(prev / 10))}>←</button>
+        <button onClick={() => setCantidad((prev) => parseInt(`${prev || ''}0`))}>0</button>
+        <button onClick={() => setCantidad(1)}>⟲</button>
+      </div>
     </div>
   );
 
@@ -137,8 +150,6 @@ const CargaProductos = ({
             className="input-cantidad"
             style={{ marginRight: '1rem' }}
           />
-
-
           <div className="grupo-boton-agregar">
             <button type="submit" className="boton-agregar">Agregar</button>
             {enProceso.size > 0 && (
@@ -153,16 +164,14 @@ const CargaProductos = ({
       </form>
 
       {errorProducto && (
-        <div
-          style={{
-            backgroundColor: '#f8d7da',
-            color: '#721c24',
-            padding: '0.6rem 1rem',
-            borderRadius: '6px',
-            marginBottom: '1rem',
-            border: '1px solid #f5c6cb'
-          }}
-        >
+        <div style={{
+          backgroundColor: '#f8d7da',
+          color: '#721c24',
+          padding: '0.6rem 1rem',
+          borderRadius: '6px',
+          marginBottom: '1rem',
+          border: '1px solid #f5c6cb'
+        }}>
           ⚠️ {errorProducto}
         </div>
       )}
