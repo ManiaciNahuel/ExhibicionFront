@@ -92,23 +92,59 @@ const CargaProductos = ({
     <div className="teclado-numerico-simulado">
       <div className="fila-teclado">
         {[1, 2, 3].map((n) => (
-          <button type="button" key={n} onClick={() => setCantidad((prev) => parseInt(`${prev || ''}${n}`))}>{n}</button>
+          <button type="button" key={n} onClick={() => {
+            if (document.activeElement === inputCodigoRef.current) {
+              setCodigoBarras((prev) => `${prev || ''}${n}`);
+            } else {
+              setCantidad((prev) => parseInt(`${prev || ''}${n}`));
+            }
+          }}>{n}</button>
         ))}
       </div>
       <div className="fila-teclado">
         {[4, 5, 6].map((n) => (
-          <button type="button" key={n} onClick={() => setCantidad((prev) => parseInt(`${prev || ''}${n}`))}>{n}</button>
+          <button type="button" key={n} onClick={() => {
+            if (document.activeElement === inputCodigoRef.current) {
+              setCodigoBarras((prev) => `${prev || ''}${n}`);
+            } else {
+              setCantidad((prev) => parseInt(`${prev || ''}${n}`));
+            }
+          }}>{n}</button>
         ))}
       </div>
       <div className="fila-teclado">
         {[7, 8, 9].map((n) => (
-          <button type="button" key={n} onClick={() => setCantidad((prev) => parseInt(`${prev || ''}${n}`))}>{n}</button>
+          <button type="button" key={n} onClick={() => {
+            if (document.activeElement === inputCodigoRef.current) {
+              setCodigoBarras((prev) => `${prev || ''}${n}`);
+            } else {
+              setCantidad((prev) => parseInt(`${prev || ''}${n}`));
+            }
+          }}>{n}</button>
         ))}
       </div>
       <div className="fila-teclado">
-        <button type="button" onClick={() => setCantidad((prev) => Math.floor(prev / 10))}>←</button>
-        <button type="button" onClick={() => setCantidad((prev) => parseInt(`${prev || ''}0`))}>0</button>
-        <button type="button" onClick={() => setCantidad("")}>⟲</button>
+        <button type="button" onClick={() => {
+          if (document.activeElement === inputCodigoRef.current) {
+            setCodigoBarras((prev) => prev.slice(0, -1));
+          } else {
+            setCantidad((prev) => Math.floor(prev / 10));
+          }
+        }}>←</button>
+        <button type="button" onClick={() => {
+          if (document.activeElement === inputCodigoRef.current) {
+            setCodigoBarras((prev) => `${prev || ''}0`);
+          } else {
+            setCantidad((prev) => parseInt(`${prev || ''}0`));
+          }
+        }}>0</button>
+        <button type="button" onClick={() => {
+          if (document.activeElement === inputCodigoRef.current) {
+            setCodigoBarras('');
+          } else {
+            setCantidad('');
+          }
+        }}>⟲</button>
       </div>
     </div>
   );
@@ -137,6 +173,7 @@ const CargaProductos = ({
               <div className='container-agregar'>
                 <input
                   type="text"
+                  inputMode={esMobile ? 'numeric' : undefined}
                   value={codigoBarras}
                   ref={inputCodigoRef}
                   onChange={handleCodigoChange}
@@ -149,7 +186,7 @@ const CargaProductos = ({
 
                 <input
                   type="text"
-                  inputMode="numeric"
+                  inputMode={esMobile ? 'numeric' : undefined}
                   pattern="[0-9]*"
                   value={cantidad}
                   ref={inputCantidadRef}
