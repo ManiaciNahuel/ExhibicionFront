@@ -36,6 +36,7 @@ const CargaProductos = ({
   const inputCodigoRef = useRef(null);
   const inputCantidadRef = useRef(null);
   const [cargando, setCargando] = useState(false);
+  const [mostrarFormulario, setMostrarFormulario] = useState(true);
 
   const esMobile = /Mobi|Android/i.test(navigator.userAgent);
 
@@ -118,59 +119,64 @@ const CargaProductos = ({
         <h3>
           📍 Ubicación actual: <span> {codigoUbicacion} </span>
         </h3>
+        {!mostrarFormulario && (
+          <button className="boton-flotante-reabrir cambiar-ubicacion" onClick={() => setMostrarFormulario(true)}>
+            📥 Cargar productos
+          </button>
+        )}
         <button onClick={() => setUbicacionConfirmada(false)} className='cambiar-ubicacion'>
           🔄 Cambiar ubicación
         </button>
       </div>
       <div className="pantalla-carga-producto">
-        <button className="cerrar-carga" onClick={() => setUbicacionConfirmada(false)}>✖</button>
-        <form onSubmit={handleAgregarProductoWrapper} className="formulario-carga">
+        {mostrarFormulario && (
+          <div className="pantalla-carga-producto">
+            <button className="cerrar-carga" onClick={() => setMostrarFormulario(false)}>✖</button>
+            <form onSubmit={handleAgregarProductoWrapper} className="formulario-carga">
+              <label>📦 Escaneá o escribí el código del producto:</label><br />
+              <div className='container-agregar'>
+                <input
+                  type="text"
+                  value={codigoBarras}
+                  ref={inputCodigoRef}
+                  onChange={handleCodigoChange}
+                  onKeyDown={handleCodigoKeyPress}
+                  placeholder="Código de barras"
+                  required
+                  className="input-codigo"
+                  style={{ marginRight: '1rem' }}
+                />
 
-
-          {/* <form onSubmit={handleAgregarProductoWrapper} style={{ padding: '1rem 0rem 0rem', borderTop: '3px solid #ccc' }}> */}
-          <label>📦 Escaneá el código del producto:</label><br />
-          <div className='container-agregar'>
-            <input
-              type="text"
-              value={codigoBarras}
-              ref={inputCodigoRef}
-              onChange={handleCodigoChange}
-              onKeyDown={handleCodigoKeyPress}
-              placeholder="Código de barras"
-              required
-              className="input-codigo"
-              style={{ marginRight: '1rem' }}
-            />
-
-            <input
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              value={cantidad}
-              ref={inputCantidadRef}
-              onChange={(e) => {
-                const soloNumeros = e.target.value.replace(/\D/g, '');
-                setCantidad(parseInt(soloNumeros || ''));
-                setErrorProducto('');
-              }}
-              onKeyDown={handleCantidadKeyPress}
-              required
-              className="input-cantidad"
-              style={{ marginRight: '1rem' }}
-            />
-            <div className="grupo-boton-agregar">
-              {errorProducto && (<div className='error-teclado'>⚠️ {errorProducto}</div>)}
-
-              {esMobile && renderTecladoNumerico()}
-              <button type="submit" className="boton-agregar">Agregar</button>
-              {enProceso.size > 0 && (
-                <div className="agregando">
-                  🕓 Agregando {enProceso.size}...
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={cantidad}
+                  ref={inputCantidadRef}
+                  onChange={(e) => {
+                    const soloNumeros = e.target.value.replace(/\D/g, '');
+                    setCantidad(parseInt(soloNumeros || ''));
+                    setErrorProducto('');
+                  }}
+                  onKeyDown={handleCantidadKeyPress}
+                  required
+                  className="input-cantidad"
+                  style={{ marginRight: '1rem' }}
+                />
+                <div className="grupo-boton-agregar">
+                  {errorProducto && (<div className='error-teclado'>⚠️ {errorProducto}</div>)}
+                  {esMobile && renderTecladoNumerico()}
+                  <button type="submit" className="boton-agregar">Agregar</button>
+                  {enProceso.size > 0 && (
+                    <div className="agregando">
+                      🕓 Agregando {enProceso.size}...
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </div>
+            </form>
           </div>
-        </form>
+        )}
       </div>
 
       {errorProducto && (
