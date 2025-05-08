@@ -66,6 +66,10 @@ const CargaProductos = ({
 
   const handleAgregarProductoWrapper = async (e) => {
     e.preventDefault();
+    if (isNaN(cantidad) || cantidad < 1 || cantidad > 999) {
+      setErrorProducto('Cantidad inválida. Debe ser entre 1 y 999.');
+      return;
+    }
     setCargando(true);
     setCodigoBarras('');
     setCantidad("");
