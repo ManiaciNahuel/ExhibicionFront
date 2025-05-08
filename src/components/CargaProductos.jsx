@@ -87,17 +87,17 @@ const CargaProductos = ({
     <div className="teclado-numerico-simulado">
       <div className="fila-teclado">
         {[1, 2, 3].map((n) => (
-          <button key={n} onClick={() => setCantidad((prev) => parseInt(`${prev || ''}${n}`))}>{n}</button>
+          <button type="button" key={n} onClick={() => setCantidad((prev) => parseInt(`${prev || ''}${n}`))}>{n}</button>
         ))}
       </div>
       <div className="fila-teclado">
         {[4, 5, 6].map((n) => (
-          <button key={n} onClick={() => setCantidad((prev) => parseInt(`${prev || ''}${n}`))}>{n}</button>
+          <button type="button" key={n} onClick={() => setCantidad((prev) => parseInt(`${prev || ''}${n}`))}>{n}</button>
         ))}
       </div>
       <div className="fila-teclado">
         {[7, 8, 9].map((n) => (
-          <button key={n} onClick={() => setCantidad((prev) => parseInt(`${prev || ''}${n}`))}>{n}</button>
+          <button type="button" key={n} onClick={() => setCantidad((prev) => parseInt(`${prev || ''}${n}`))}>{n}</button>
         ))}
       </div>
       <div className="fila-teclado">
