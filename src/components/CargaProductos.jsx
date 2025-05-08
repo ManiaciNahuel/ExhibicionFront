@@ -68,7 +68,7 @@ const CargaProductos = ({
     e.preventDefault();
     setCargando(true);
     setCodigoBarras('');
-    setCantidad(1);
+    setCantidad("");
     inputCodigoRef.current?.focus();
     const exito = await handleAgregarProducto(e);
     setCargando(false);
@@ -101,9 +101,9 @@ const CargaProductos = ({
         ))}
       </div>
       <div className="fila-teclado">
-        <button onClick={() => setCantidad((prev) => Math.floor(prev / 10))}>←</button>
-        <button onClick={() => setCantidad((prev) => parseInt(`${prev || ''}0`))}>0</button>
-        <button onClick={() => setCantidad(1)}>⟲</button>
+        <button type="button" onClick={() => setCantidad((prev) => Math.floor(prev / 10))}>←</button>
+        <button type="button" onClick={() => setCantidad((prev) => parseInt(`${prev || ''}0`))}>0</button>
+        <button type="button" onClick={() => setCantidad("")}>⟲</button>
       </div>
     </div>
   );
@@ -142,7 +142,7 @@ const CargaProductos = ({
             ref={inputCantidadRef}
             onChange={(e) => {
               const soloNumeros = e.target.value.replace(/\D/g, '');
-              setCantidad(parseInt(soloNumeros || '1'));
+              setCantidad(parseInt(soloNumeros || ''));
               setErrorProducto('');
             }}
             onKeyDown={handleCantidadKeyPress}
@@ -151,6 +151,7 @@ const CargaProductos = ({
             style={{ marginRight: '1rem' }}
           />
           <div className="grupo-boton-agregar">
+            {esMobile && renderTecladoNumerico()}
             <button type="submit" className="boton-agregar">Agregar</button>
             {enProceso.size > 0 && (
               <div className="agregando">
@@ -159,8 +160,6 @@ const CargaProductos = ({
             )}
           </div>
         </div>
-
-        {esMobile && renderTecladoNumerico()}
       </form>
 
       {errorProducto && (
