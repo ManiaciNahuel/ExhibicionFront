@@ -16,7 +16,7 @@ const HomeSucursal = () => {
     const [errorProducto, setErrorProducto] = useState('');
 
     const [codigoBarras, setCodigoBarras] = useState('');
-    const [cantidad, setCantidad] = useState(1);
+    const [cantidad, setCantidad] = useState('');
     const [productosCargados, setProductosCargados] = useState([]);
     const [ubicacionesPermitidas, setUbicacionesPermitidas] = useState([]);
     const [division, setDivision] = useState('');
@@ -286,7 +286,7 @@ const HomeSucursal = () => {
 
                 }
             ]);
-            setCantidad(1);
+            setCantidad('');
         } catch (error) {
             console.error("❌ Error al crear producto:", error);
             alert("Error al agregar producto");
