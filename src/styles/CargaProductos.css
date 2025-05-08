@@ -93,6 +93,10 @@
     padding: 0.5rem 0.8rem;
 }
 
+.cerrar-carga {
+    visibility: none;
+}
+
 .container-agregar {
     display: flex;
     flex-direction: row;
@@ -150,6 +154,18 @@
     gap: 0.5rem;
     justify-content: center;
     margin-top: 1rem;
+}
+
+.error-teclado {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    border: 1px solid #f5c6cb;
+    font-size: 1rem;
+    width: 100%;
+    text-align: center;
 }
 
 .tecla {
@@ -231,5 +247,123 @@
     .ubicacion-actual h3 {
         font-size: 1.2rem;
         text-align: center;
+    }
+
+    .pantalla-carga-producto {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: white;
+        z-index: 1000;
+        padding: 2rem 1rem;
+        max-height: 100vh;
+        overflow-y: auto;
+        padding-bottom: 2rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .cerrar-carga {
+        position: absolute;
+        top: 1rem;
+        right: 3rem;
+        font-size: 2rem;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: #333;
+    }
+
+    .formulario-carga {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .container-agregar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .input-codigo,
+    .input-cantidad {
+        width: 80%;
+        font-size: 1.1rem;
+    }
+
+    .grupo-boton-agregar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+        padding: 0;
+    }
+
+    .boton-agregar {
+        width: 100%;
+        font-size: 1.1rem;
+        padding: 1rem;
+    }
+
+    .agregando {
+        font-size: 1rem;
+        padding: 0.8rem;
+        width: 100%;
+    }
+
+    .productos-cargados {
+        margin-top: 1rem;
+        padding: 1rem;
+        max-height: 40vh;
+        overflow-y: auto;
+    }
+
+    .cambiar-ubicacion {
+        font-size: 1rem;
+        padding: 0.8rem 1.2rem;
+        margin-top: 1rem;
+    }
+
+    .ubicacion-actual {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .ubicacion-actual h3 {
+        font-size: 1.2rem;
+        text-align: center;
+    }
+
+    .teclado-numerico-simulado {
+        margin-top: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        align-items: center;
+    }
+
+    .fila-teclado {
+        display: flex;
+        justify-content: center;
+        gap: 0.6rem;
+    }
+
+    .fila-teclado button {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+        border: none;
+        border-radius: 12px;
+        background-color: #f0f0f0;
+        color: #1f1f1f;
+        font-weight: bold;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        transition: background-color 0.2s ease;
+    }
+
+    .fila-teclado button:active {
+        background-color: #e3b505;
+        color: white;
     }
 }
