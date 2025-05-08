@@ -37,6 +37,8 @@ const CargaProductos = ({
   const inputCantidadRef = useRef(null);
   const [cargando, setCargando] = useState(false);
   const [mostrarFormulario, setMostrarFormulario] = useState(true);
+  const [inputActivo, setInputActivo] = useState('codigo'); // 'codigo' o 'cantidad'
+  const [mensajeEstado, setMensajeEstado] = useState('');
 
   const esMobile = /Mobi|Android/i.test(navigator.userAgent);
 
@@ -47,9 +49,9 @@ const CargaProductos = ({
   }, []);
 
   const handleCodigoChange = (e) => {
-    const limpio = e.target.value.replace(/^0+/, '');
-    setCodigoBarras(limpio);
+    setCodigoBarras(e.target.value.trim());
   };
+
 
   const handleCodigoKeyPress = (e) => {
     if (e.key === 'Enter') {
@@ -77,6 +79,11 @@ const CargaProductos = ({
     inputCodigoRef.current?.focus();
     const exito = await handleAgregarProducto(e);
     setCargando(false);
+    if (exito) {
+      setMensajeEstado('✅ Agregado OK');
+      setTimeout(() => setMensajeEstado(''), 2000);
+    }
+
   };
 
   useEffect(() => {
@@ -93,7 +100,7 @@ const CargaProductos = ({
       <div className="fila-teclado">
         {[1, 2, 3].map((n) => (
           <button type="button" key={n} onClick={() => {
-            if (document.activeElement === inputCodigoRef.current) {
+            if (inputActivo === 'codigo') {
               setCodigoBarras((prev) => `${prev || ''}${n}`);
             } else {
               setCantidad((prev) => parseInt(`${prev || ''}${n}`));
@@ -104,7 +111,7 @@ const CargaProductos = ({
       <div className="fila-teclado">
         {[4, 5, 6].map((n) => (
           <button type="button" key={n} onClick={() => {
-            if (document.activeElement === inputCodigoRef.current) {
+            if (inputActivo === 'codigo') {
               setCodigoBarras((prev) => `${prev || ''}${n}`);
             } else {
               setCantidad((prev) => parseInt(`${prev || ''}${n}`));
@@ -115,7 +122,7 @@ const CargaProductos = ({
       <div className="fila-teclado">
         {[7, 8, 9].map((n) => (
           <button type="button" key={n} onClick={() => {
-            if (document.activeElement === inputCodigoRef.current) {
+            if (inputActivo === 'codigo') {
               setCodigoBarras((prev) => `${prev || ''}${n}`);
             } else {
               setCantidad((prev) => parseInt(`${prev || ''}${n}`));
@@ -125,21 +132,21 @@ const CargaProductos = ({
       </div>
       <div className="fila-teclado">
         <button type="button" onClick={() => {
-          if (document.activeElement === inputCodigoRef.current) {
+          if (inputActivo === 'codigo') {
             setCodigoBarras((prev) => prev.slice(0, -1));
           } else {
             setCantidad((prev) => Math.floor(prev / 10));
           }
         }}>←</button>
         <button type="button" onClick={() => {
-          if (document.activeElement === inputCodigoRef.current) {
+          if (inputActivo === 'codigo') {
             setCodigoBarras((prev) => `${prev || ''}0`);
           } else {
             setCantidad((prev) => parseInt(`${prev || ''}0`));
           }
         }}>0</button>
         <button type="button" onClick={() => {
-          if (document.activeElement === inputCodigoRef.current) {
+          if (inputActivo === 'codigo') {
             setCodigoBarras('');
           } else {
             setCantidad('');
@@ -148,6 +155,7 @@ const CargaProductos = ({
       </div>
     </div>
   );
+
 
   return (
     <div>
@@ -173,9 +181,10 @@ const CargaProductos = ({
               <div className='container-agregar'>
                 <input
                   type="text"
-                  inputMode={esMobile ? 'numeric' : undefined}
+                  inputMode="text"
                   value={codigoBarras}
                   ref={inputCodigoRef}
+                  onFocus={() => setInputActivo('codigo')}
                   onChange={handleCodigoChange}
                   onKeyDown={handleCodigoKeyPress}
                   placeholder="Código de barras"
@@ -186,9 +195,9 @@ const CargaProductos = ({
 
                 <input
                   type="text"
-                  inputMode={esMobile ? 'numeric' : undefined}
-                  pattern="[0-9]*"
+                  inputMode="text"
                   value={cantidad}
+                  onFocus={() => setInputActivo('cantidad')}
                   ref={inputCantidadRef}
                   onChange={(e) => {
                     const soloNumeros = e.target.value.replace(/\D/g, '');
@@ -203,12 +212,16 @@ const CargaProductos = ({
                 <div className="grupo-boton-agregar">
                   {errorProducto && (<div className='error-teclado'>⚠️ {errorProducto}</div>)}
                   {esMobile && renderTecladoNumerico()}
+                  {mensajeEstado
+                    ? <div className="agregando">{mensajeEstado}</div>
+                    : (enProceso.size > 0 && (
+                      <div className="agregando">
+                        🕓 Agregando {enProceso.size}...
+                      </div>
+                    ))
+                  }
+
                   <button type="submit" className="boton-agregar">Agregar</button>
-                  {enProceso.size > 0 && (
-                    <div className="agregando">
-                      🕓 Agregando {enProceso.size}...
-                    </div>
-                  )}
                 </div>
               </div>
             </form>

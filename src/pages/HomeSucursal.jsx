@@ -149,12 +149,31 @@ const HomeSucursal = () => {
         try {
             setProductosCargando(prev => new Set(prev).add(codigoBarras));
 
-            const res = await axios.get(`https://exhibicionback-production.up.railway.app/productos/${codigoBarras}`);
-            const producto = res.data;
+            let producto = null;
+            let codigoUsado = codigoBarras;
+
+            try {
+                const res = await axios.get(`https://exhibicionback-production.up.railway.app/productos/${codigoBarras}`);
+                producto = res.data;
+            } catch (e) {
+                // No encontrado, intentamos sin ceros
+                if (/^0+/.test(codigoBarras)) {
+                    const sinCeros = codigoBarras.replace(/^0+/, '');
+                    try {
+                        const res2 = await axios.get(`https://exhibicionback-production.up.railway.app/productos/${sinCeros}`);
+                        producto = res2.data;
+                        codigoUsado = sinCeros;
+                    } catch (e2) {
+                        // no encontrado tampoco
+                    }
+                }
+            }
+
             if (!producto || !producto.CodPlex) {
                 setErrorProducto('Producto no encontrado');
                 return;
             }
+
 
             // ✅ Verificación local en la ubicación actual por codplex
             const yaEnUbicacionActual = productosCargados.find(
@@ -224,7 +243,7 @@ const HomeSucursal = () => {
             // Si no está duplicado, lo agregamos
             await crearProducto(
                 producto,
-                codigoBarras,
+                codigoUsado,
                 cantidad,
                 tipoUbicacion,
                 numero,
