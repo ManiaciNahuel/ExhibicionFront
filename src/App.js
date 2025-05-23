@@ -57,6 +57,21 @@ const App = () => {
               element={<PrivateRoute isAuthenticated={!!usuario} element={<UbicacionesAdmin />} />}
             />
           </>
+        ) : usuario?.rol === 'compras' ? (
+          <>
+            <Route
+              path="/"
+              element={<PrivateRoute isAuthenticated={!!usuario} element={<PanelCompras />} />}
+            />
+            <Route
+              path="/producto-por-sucursal"
+              element={<PrivateRoute isAuthenticated={!!usuario} element={<ProductoPorSucursal />} />}
+            />
+            <Route
+              path="/sucursal-completa"
+              element={<PrivateRoute isAuthenticated={!!usuario} element={<UbicacionesPorSucursal />} />}
+            />
+          </>
         ) : (
           <>
             <Route
