@@ -41,7 +41,6 @@ const SelectorUbicacion = ({
 
   return (
 
-
     <form onSubmit={handleConfirmarUbicacion}>
       <div className="tipo-selector">
         <h4>Tipo de ubicación:</h4>

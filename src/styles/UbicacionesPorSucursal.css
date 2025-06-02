@@ -1,0 +1,77 @@
+.ubicaciones-container {
+    padding: 2rem;
+}
+
+.ubicaciones-container h1 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+}
+
+.form-grid {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.form-grid select {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.selector-numeros {
+    margin-bottom: 2rem;
+}
+
+.selector-numeros button {
+    margin: 0.25rem;
+    padding: 0.5rem 1rem;
+    background-color: #e5e7eb;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.selector-numeros button:hover {
+    background-color: #d1d5db;
+}
+
+.lista-ubicaciones h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.ubicacion {
+    margin-bottom: 2rem;
+}
+
+.ubicacion .clickable {
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+    color: #2563eb;
+}
+
+.ubicacion .clickable:hover {
+    text-decoration: underline;
+}
+
+.ubicacion table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.ubicacion th,
+.ubicacion td {
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    text-align: left;
+}
+
+.ubicacion thead {
+    background-color: #f3f4f6;
+}

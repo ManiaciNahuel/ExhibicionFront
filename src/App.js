@@ -9,6 +9,9 @@ import DashboardSucursal from './pages/DashboardSucursal';
 import VerUbicaciones from './pages/VerUbicaciones';
 import BuscarProducto from './components/BuscarProducto';
 import UbicacionesAdmin from './pages/UbicacionesAdmin';
+import PanelCompras from './pages/PanelCompras';
+import ProductoPorSucursal from './pages/ProductoPorSucursal';
+import UbicacionesPorSucursal from './pages/UbicacionesPorSucursal';
 
 const PrivateRoute = ({ element, isAuthenticated }) => {
   return isAuthenticated ? element : <Navigate to="/login" />;
@@ -55,6 +58,21 @@ const App = () => {
             <Route
               path="/admin/ubicaciones"
               element={<PrivateRoute isAuthenticated={!!usuario} element={<UbicacionesAdmin />} />}
+            />
+          </>
+        ) : usuario?.rol === 'compras' ? (
+          <>
+            <Route
+              path="/"
+              element={<PrivateRoute isAuthenticated={!!usuario} element={<PanelCompras />} />}
+            />
+            <Route
+              path="/producto-por-sucursal"
+              element={<PrivateRoute isAuthenticated={!!usuario} element={<ProductoPorSucursal />} />}
+            />
+            <Route
+              path="/sucursal-completa"
+              element={<PrivateRoute isAuthenticated={!!usuario} element={<UbicacionesPorSucursal />} />}
             />
           </>
         ) : (

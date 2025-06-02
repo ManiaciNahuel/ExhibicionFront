@@ -1,0 +1,51 @@
+.producto-container {
+    padding: 2rem;
+}
+
+.producto-container h1 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.producto-container .busqueda {
+    margin-bottom: 1rem;
+}
+
+.producto-container input {
+    padding: 0.5rem 1rem;
+    margin-right: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+}
+
+.producto-container button {
+    background-color: #2563eb;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    border: none;
+    cursor: pointer;
+}
+
+.producto-container button:hover {
+    background-color: #1e40af;
+}
+
+.producto-container table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    margin-top: 1rem;
+}
+
+.producto-container th,
+.producto-container td {
+    border: 1px solid #ddd;
+    padding: 0.5rem;
+    text-align: left;
+}
+
+.producto-container thead {
+    background-color: #f3f4f6;
+}
