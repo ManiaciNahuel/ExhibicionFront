@@ -9,6 +9,9 @@ import DashboardSucursal from './pages/DashboardSucursal';
 import VerUbicaciones from './pages/VerUbicaciones';
 import BuscarProducto from './components/BuscarProducto';
 import UbicacionesAdmin from './pages/UbicacionesAdmin';
+import PanelCompras from './pages/PanelCompras';
+import ProductoPorSucursal from './pages/ProductoPorSucursal';
+import UbicacionesPorSucursal from './pages/UbicacionesPorSucursal';
 
 const PrivateRoute = ({ element, isAuthenticated }) => {
   return isAuthenticated ? element : <Navigate to="/login" />;
