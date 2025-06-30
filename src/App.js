@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import VerUbicacionesAdmin from './pages/VerUbicacionesAdmin';
 import AdminDashboard from './pages/AdminDashboard';
 
 import Login from './pages/Login';
