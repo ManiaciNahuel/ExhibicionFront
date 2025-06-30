@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/ProductoPorSucursal.css';
 
 const ProductoPorSucursal = () => {
     const [codebar, setCodebar] = useState('');
     const [resultados, setResultados] = useState([]);
+    const navigate = useNavigate();
+
 
     const buscar = async () => {
         try {
@@ -17,8 +20,13 @@ const ProductoPorSucursal = () => {
 
     return (
         <div className="producto-container">
+            <button
+                onClick={() => navigate('/sucursal-completa')}
+                className="boton boton-flotante-compras"
+            >
+                🔎 Ver sucursales
+            </button>
             <h1>Buscar Producto por Sucursal</h1>
-
             <div className="busqueda">
                 <input
                     type="text"
@@ -26,7 +34,7 @@ const ProductoPorSucursal = () => {
                     onChange={(e) => setCodebar(e.target.value)}
                     placeholder="Escaneá o escribí el código de barras"
                 />
-                <button onClick={buscar}>Buscar</button>
+                <button onClick={buscar} className="boton">Buscar</button>
             </div>
 
             {resultados.length > 0 && (
