@@ -1,5 +1,6 @@
 // UbicacionesPorSucursal.jsx
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/UbicacionesPorSucursal.css';
 
 const BASE_URL = 'https://exhibicionback-production.up.railway.app';
@@ -9,10 +10,14 @@ const UbicacionesPorSucursal = () => {
     const [sucursalSeleccionada, setSucursalSeleccionada] = useState(null);
     const [tipo, setTipo] = useState('G');
     const [numeroSeleccionado, setNumeroSeleccionado] = useState(null);
+    const [divisionSeleccionada, setDivisionSeleccionada] = useState(null);
     const [permitidas, setPermitidas] = useState([]);
     const [productosPorUbicacion, setProductosPorUbicacion] = useState({});
     const [cargandoUbicacion, setCargandoUbicacion] = useState(null);
     const [ubicacionesVisibles, setUbicacionesVisibles] = useState(new Set());
+    const navigate = useNavigate();
+
+    const planogramaSrc = sucursalSeleccionada ? `/planogramas/${sucursalSeleccionada.id}.png` : null;
 
     useEffect(() => {
         fetch(`${BASE_URL}/sucursales`)
@@ -36,8 +41,19 @@ const UbicacionesPorSucursal = () => {
         permitidas.filter(u => u.tipo === tipo).map(u => u.numeroUbicacion)
     )];
 
+    const divisiones = permitidas.filter(u =>
+        u.tipo === 'G' &&
+        u.numeroUbicacion === numeroSeleccionado
+    );
+
+    const divisionesUnicas = [...new Set(
+        divisiones.map(u => `${u.division}${u.numeroDivision}`)
+    )].filter(Boolean);
+
     const subdivisiones = permitidas.filter(u =>
-        u.tipo === tipo && u.numeroUbicacion === numeroSeleccionado
+        u.tipo === tipo &&
+        u.numeroUbicacion === numeroSeleccionado &&
+        (tipo !== 'G' || `${u.division}${u.numeroDivision}` === divisionSeleccionada)
     );
 
     const toggleUbicacion = async (ubicacion) => {
@@ -63,6 +79,12 @@ const UbicacionesPorSucursal = () => {
 
     return (
         <div className="ubicaciones-container">
+            <button
+                onClick={() => navigate('/producto-por-sucursal')}
+                className="boton boton-flotante-compras"
+            >
+                🔎 Buscar un producto
+            </button>
             <h1>Productos cargados por ubicación</h1>
 
             <div className="form-grid">
@@ -73,6 +95,7 @@ const UbicacionesPorSucursal = () => {
                             const selected = sucursales.find(s => s.id === parseInt(e.target.value));
                             setSucursalSeleccionada(selected);
                             setNumeroSeleccionado(null);
+                            setDivisionSeleccionada(null);
                             setProductosPorUbicacion({});
                             setUbicacionesVisibles(new Set());
                         }}
@@ -89,6 +112,7 @@ const UbicacionesPorSucursal = () => {
                     <select value={tipo} onChange={(e) => {
                         setTipo(e.target.value);
                         setNumeroSeleccionado(null);
+                        setDivisionSeleccionada(null);
                         setUbicacionesVisibles(new Set());
                         setProductosPorUbicacion({});
                     }}>
@@ -98,6 +122,30 @@ const UbicacionesPorSucursal = () => {
                 </div>
             </div>
 
+            {planogramaSrc && (
+                <img
+                    id="planograma-img"
+                    src={planogramaSrc}
+                    alt="Planograma"
+                    onClick={() => {
+                        const img = document.getElementById('planograma-img');
+                        if (document.fullscreenElement) {
+                            document.exitFullscreen();
+                        } else {
+                            img.requestFullscreen?.() || img.webkitRequestFullscreen?.() || img.msRequestFullscreen?.();
+                        }
+                    }}
+                    style={{
+                        width: '200px',
+                        height: 'auto',
+                        borderRadius: '8px',
+                        border: '1px solid #ccc',
+                        cursor: 'pointer',
+                        marginTop: '1rem'
+                    }}
+                />
+            )}
+
             {sucursalSeleccionada && (
                 <div className="selector-numeros">
                     <h3>Seleccioná número de {tipo === 'G' ? 'góndola' : 'módulo'}:</h3>
@@ -105,7 +153,10 @@ const UbicacionesPorSucursal = () => {
                         <button
                             key={n}
                             className={`numero-btn ${numeroSeleccionado === n ? 'activo' : ''}`}
-                            onClick={() => setNumeroSeleccionado(n)}
+                            onClick={() => {
+                                setNumeroSeleccionado(n);
+                                setDivisionSeleccionada(null);
+                            }}
                         >
                             {n}
                         </button>
@@ -113,9 +164,24 @@ const UbicacionesPorSucursal = () => {
                 </div>
             )}
 
-            {numeroSeleccionado && (
+            {sucursalSeleccionada && numeroSeleccionado && tipo === 'G' && (
+                <div className="selector-numeros">
+                    <h3>Seleccioná lado o puntera:</h3>
+                    {divisionesUnicas.map((d, i) => (
+                        <button
+                            key={i}
+                            className={`numero-btn ${divisionSeleccionada === d ? 'activo' : ''}`}
+                            onClick={() => setDivisionSeleccionada(d)}
+                        >
+                            {d}
+                        </button>
+                    ))}
+                </div>
+            )}
+
+            {(tipo === 'M' || (tipo === 'G' && divisionSeleccionada)) && numeroSeleccionado && (
                 <div className="lista-ubicaciones">
-                    <h2>{tipo}{numeroSeleccionado} – Subdivisiones</h2>
+                    <h2>{tipo}{numeroSeleccionado}{divisionSeleccionada ? ` – ${divisionSeleccionada}` : ''} – Subdivisiones</h2>
                     {subdivisiones.map((u, i) => {
                         const nombreUbicacion = `${tipo}${u.numeroUbicacion}${u.division || ''}${u.numeroDivision || ''}${u.subdivision}${u.numeroSubdivision}`;
                         const productos = productosPorUbicacion[nombreUbicacion] || [];

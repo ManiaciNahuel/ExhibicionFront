@@ -71,7 +71,6 @@ const HomeSucursal = () => {
                     numeroSubdivision: u.numeroSubdivision,
                     categoria: u.categoria || 'Sin categoría',
                     codigo: `${u.tipo}${u.numeroUbicacion}${u.subdivision || ''}${u.numeroSubdivision || ''}`,
-
                 }));
 
                 setUbicacionesPermitidas(data);
@@ -115,7 +114,7 @@ const HomeSucursal = () => {
 
             const productos = res.data.map(p => ({
                 id: p.id,
-                nombre: `${p.producto?.Producto || ''} ${p.producto?.Presentaci || ''}`.trim() || 'Sin nombre',
+                nombre: `${p.producto?.Producto || ''} ${p.producto?.Presentaci || ''}`.trim() || 'Cargando',
                 codigo: p.codebar,
                 codplex: p.codplex,
                 cantidad: p.cantidad,
@@ -297,7 +296,7 @@ const HomeSucursal = () => {
                 ...prev,
                 {
                     id: nuevo.id,
-                    nombre: `${producto.Producto || ''} ${producto.Presentaci || ''}`.trim() || 'Sin nombre',
+                    nombre: `${producto.Producto || ''} ${producto.Presentaci || ''}`.trim() || 'Cargando',
                     codigo,
                     cantidad,
                     codplex: producto.CodPlex, // 👈 clave para que funcione el find

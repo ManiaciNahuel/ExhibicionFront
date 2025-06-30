@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import VerUbicacionesAdmin from './pages/VerUbicacionesAdmin';
 import AdminDashboard from './pages/AdminDashboard';
 
 import Login from './pages/Login';
@@ -10,7 +9,7 @@ import VerUbicaciones from './pages/VerUbicaciones';
 import BuscarProducto from './components/BuscarProducto';
 import UbicacionesAdmin from './pages/UbicacionesAdmin';
 import PanelCompras from './pages/PanelCompras';
-import ProductoPorSucursal from './pages/ProductoPorSucursal';
+import ProductoPorSucursal from './pages/ProductoEnSucursales';
 import UbicacionesPorSucursal from './pages/UbicacionesPorSucursal';
 
 const PrivateRoute = ({ element, isAuthenticated }) => {
