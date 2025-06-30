@@ -200,6 +200,7 @@ const UbicacionesPorSucursal = () => {
                                                 <th>Producto</th>
                                                 <th>Código</th>
                                                 <th>Cantidad</th>
+                                                <th>Stock</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -208,6 +209,7 @@ const UbicacionesPorSucursal = () => {
                                                     <td>{p.producto?.nombre || ''}</td>
                                                     <td>{p.codebar}</td>
                                                     <td>{p.cantidad}</td>
+                                                    <td>{p.stock_actual ?? '-'}</td>
                                                 </tr>
                                             ))}
                                         </tbody>
