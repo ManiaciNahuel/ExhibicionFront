@@ -56,6 +56,16 @@ const UbicacionesPorSucursal = () => {
         (tipo !== 'G' || `${u.division}${u.numeroDivision}` === divisionSeleccionada)
     );
 
+    const obtenerSurtido = async (nsuc, sku) => {
+        try {
+            const res = await fetch(`https://saas.inthegrasoftware.com/ords/inth1060/fsa/surtidos?pnsuc=${nsuc}&psku=${sku}`);
+            const data = await res.json();
+            return data.items?.[0]?.surtido ?? '-';
+        } catch {
+            return '-';
+        }
+    };
+
     const toggleUbicacion = async (ubicacion) => {
         const nueva = new Set(ubicacionesVisibles);
         if (nueva.has(ubicacion)) {
@@ -66,8 +76,15 @@ const UbicacionesPorSucursal = () => {
                 setCargandoUbicacion(ubicacion);
                 try {
                     const res = await fetch(`${BASE_URL}/ubicaciones?ubicacion=${ubicacion}&sucursal=${sucursalSeleccionada.id}`);
-                    const data = await res.json();
+                    let data = await res.json();
+                    // Obtener surtido para cada producto (en paralelo)
+                    data = await Promise.all(data.map(async (p) => ({
+                        ...p,
+                        surtido: await obtenerSurtido(sucursalSeleccionada.id, p.codplex)
+                    })));
+
                     setProductosPorUbicacion(prev => ({ ...prev, [ubicacion]: data }));
+
                 } catch (err) {
                     console.error('❌ Error al obtener productos:', err);
                 }
@@ -199,8 +216,9 @@ const UbicacionesPorSucursal = () => {
                                             <tr>
                                                 <th>Producto</th>
                                                 <th>Código</th>
-                                                <th>Cantidad</th>
+                                                <th>Lugar disponible</th>
                                                 <th>Stock</th>
+                                                <th>Surtido</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -210,6 +228,7 @@ const UbicacionesPorSucursal = () => {
                                                     <td>{p.codebar}</td>
                                                     <td>{p.cantidad}</td>
                                                     <td>{p.stock_actual ?? '-'}</td>
+                                                    <td>{p.surtido ?? '-'}</td>
                                                 </tr>
                                             ))}
                                         </tbody>
