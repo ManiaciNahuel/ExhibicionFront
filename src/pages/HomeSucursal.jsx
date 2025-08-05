@@ -10,6 +10,9 @@ const HomeSucursal = () => {
     const [tipoSeleccionado, setTipoSeleccionado] = useState('');
     const [numeroSeleccionado, setNumeroSeleccionado] = useState('');
     const [subdivisionSeleccionada, setSubdivisionSeleccionada] = useState('');
+    const [subdivision, setSubdivision] = useState('');
+    const [numeroSubdivisionSeleccionada, setNumeroSubdivisionSeleccionada] = useState('');
+
     const [codigoUbicacion, setCodigoUbicacion] = useState('');
     const [ubicacionConfirmada, setUbicacionConfirmada] = useState(false);
     const [productosCargando, setProductosCargando] = useState(new Set());
@@ -393,6 +396,19 @@ const HomeSucursal = () => {
         setProductoDuplicado(null);
     };
 
+    useEffect(() => {
+        if (subdivisionSeleccionada) {
+            const letra = subdivisionSeleccionada.match(/[A-Za-z]/)?.[0] || '';
+            const numero = subdivisionSeleccionada.match(/\d+/)?.[0] || '';
+            setSubdivision(letra);
+            setNumeroSubdivisionSeleccionada(numero);
+        } else {
+            setSubdivision('');
+            setNumeroSubdivisionSeleccionada('');
+        }
+    }, [subdivisionSeleccionada]);
+
+
 
     return (
         <>
@@ -461,9 +477,25 @@ const HomeSucursal = () => {
                                 console.log("📥 Descargando TXT para ubicación:", currentUbicacion);
 
                                 try {
+                                    const queryParams = new URLSearchParams({
+                                        sucursal: sucursalId,
+                                        tipo: tipoSeleccionado,
+                                        numeroUbicacion: numeroSeleccionado,
+                                    });
+
+                                    if (division && numeroDivision) {
+                                        queryParams.append('division', division);
+                                        queryParams.append('numeroDivision', numeroDivision);
+                                    }
+                                    if (subdivision && numeroSubdivisionSeleccionada) {
+                                        queryParams.append('subdivision', subdivision);
+                                        queryParams.append('numeroSubdivision', numeroSubdivisionSeleccionada);
+                                    }
+
                                     const response = await fetch(
-                                        `https://exhibicionback-production.up.railway.app/ubicaciones/txt-info?sucursal=${sucursalId}&ubicacion=${currentUbicacion}`
+                                        `https://exhibicionback-production.up.railway.app/ubicaciones/txt-info?${queryParams.toString()}`
                                     );
+
 
                                     const data = await response.json();
 
