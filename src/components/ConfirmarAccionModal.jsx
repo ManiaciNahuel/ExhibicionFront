@@ -70,7 +70,7 @@ const ConfirmarAccionModal = ({ onConfirm, onCancel, cantidad, producto }) => {
         <h3 className="modal-titulo">🔀 Mover producto:</h3>
         <p className="modal-subtexto">
           {producto?.producto?.nombre || producto?.Producto || producto?.nombre || 'Producto desconocido'}{' '}
-    {producto?.presentacion || producto?.Presentaci || ''}
+          {producto?.presentacion || producto?.Presentaci || ''}
         </p>
 
         <SelectorUbicacion

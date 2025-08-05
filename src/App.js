@@ -11,6 +11,7 @@ import UbicacionesAdmin from './pages/UbicacionesAdmin';
 import PanelCompras from './pages/PanelCompras';
 import ProductoPorSucursal from './pages/ProductoEnSucursales';
 import UbicacionesPorSucursal from './pages/UbicacionesPorSucursal';
+import ProblemasTecnicos from './pages/ProblemasTecnicos';
 
 const PrivateRoute = ({ element, isAuthenticated }) => {
   return isAuthenticated ? element : <Navigate to="/login" />;
@@ -44,58 +45,36 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        {usuario?.rol === 'admin' ? (
-          <>
-            <Route
-              path="/"
-              element={<Navigate to="/admin" />}
-            />
-            <Route
-              path="/admin"
-              element={<PrivateRoute isAuthenticated={!!usuario} element={<AdminDashboard />} />}
-            />
-            <Route
-              path="/admin/ubicaciones"
-              element={<PrivateRoute isAuthenticated={!!usuario} element={<UbicacionesAdmin />} />}
-            />
-          </>
-        ) : usuario?.rol === 'compras' ? (
-          <>
-            <Route
-              path="/"
-              element={<PrivateRoute isAuthenticated={!!usuario} element={<PanelCompras />} />}
-            />
-            <Route
-              path="/producto-por-sucursal"
-              element={<PrivateRoute isAuthenticated={!!usuario} element={<ProductoPorSucursal />} />}
-            />
-            <Route
-              path="/sucursal-completa"
-              element={<PrivateRoute isAuthenticated={!!usuario} element={<UbicacionesPorSucursal />} />}
-            />
-          </>
-        ) : (
-          <>
-            <Route
-              path="/"
-              element={<PrivateRoute isAuthenticated={!!usuario} element={<DashboardSucursal usuario={usuario} />} />}
-            />
-            <Route
-              path="/carga"
-              element={<PrivateRoute isAuthenticated={!!usuario} element={<HomeSucursal usuario={usuario} />} />}
-            />
-            <Route
-              path="/buscar-producto"
-              element={<PrivateRoute isAuthenticated={!!usuario} element={<BuscarProducto usuario={usuario} />} />}
-            />
-          </>
-        )}
 
-        <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
-        <Route path="*" element={<Navigate to="/" />} />
+        {/* 🔒 Rutas originales temporalmente desactivadas */}
+        {/*
+    {usuario?.rol === 'admin' ? (
+      <>
+        <Route path="/" element={<Navigate to="/admin" />} />
+        <Route path="/admin" element={<PrivateRoute isAuthenticated={!!usuario} element={<AdminDashboard />} />} />
+        <Route path="/admin/ubicaciones" element={<PrivateRoute isAuthenticated={!!usuario} element={<UbicacionesAdmin />} />} />
+      </>
+    ) : usuario?.rol === 'compras' ? (
+      <>
+        <Route path="/" element={<PrivateRoute isAuthenticated={!!usuario} element={<PanelCompras />} />} />
+        <Route path="/producto-por-sucursal" element={<PrivateRoute isAuthenticated={!!usuario} element={<ProductoPorSucursal />} />} />
+        <Route path="/sucursal-completa" element={<PrivateRoute isAuthenticated={!!usuario} element={<UbicacionesPorSucursal />} />} />
+      </>
+    ) : (
+      <>
+        <Route path="/" element={<PrivateRoute isAuthenticated={!!usuario} element={<DashboardSucursal usuario={usuario} />} />} />
+        <Route path="/carga" element={<PrivateRoute isAuthenticated={!!usuario} element={<HomeSucursal usuario={usuario} />} />} />
+        <Route path="/buscar-producto" element={<PrivateRoute isAuthenticated={!!usuario} element={<BuscarProducto usuario={usuario} />} />} />
+      </>
+    )}
+    */}
+
+        {/* 🔧 Ruta temporal de error técnico para todo */}
+        <Route path="*" element={<ProblemasTecnicos />} />
+
       </Routes>
-
     </Router>
+
   );
 };
 
