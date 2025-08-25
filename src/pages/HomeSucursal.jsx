@@ -133,7 +133,6 @@ const HomeSucursal = () => {
         }
     };
 
-    const normalizarCodigo = (code) => code.replace(/^0+/, '');
 
     const handleAgregarProducto = async (e) => {
         e.preventDefault();
