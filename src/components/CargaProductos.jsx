@@ -161,6 +161,7 @@ const CargaProductos = ({
     <div>
       <div className="ubicacion-actual">
         <h3>
+
           📍 Ubicación actual: <span> {codigoUbicacion} </span>
         </h3>
         {!mostrarFormulario && (
