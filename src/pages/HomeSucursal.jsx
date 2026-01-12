@@ -426,10 +426,12 @@ const HomeSucursal = () => {
                             }
                         }}
                         style={{
-                            width: '100%',
+                            maxWidth: '100%',
                             borderRadius: '8px',
                             border: '1px solid #ccc',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            maxHeight: '75vh',
+                            objectFit: 'contain'
                         }}
                     />
 
