@@ -5,7 +5,6 @@ import AdminDashboard from './pages/AdminDashboard';
 import Login from './pages/Login';
 import HomeSucursal from './pages/HomeSucursal';
 import DashboardSucursal from './pages/DashboardSucursal';
-import VerUbicaciones from './pages/VerUbicaciones';
 import BuscarProducto from './components/BuscarProducto';
 import UbicacionesAdmin from './pages/UbicacionesAdmin';
 import PanelCompras from './pages/PanelCompras';
@@ -18,7 +17,6 @@ const PrivateRoute = ({ element, isAuthenticated }) => {
 
 const App = () => {
   const [usuario, setUsuario] = useState(null);
-  const rol = localStorage.getItem('rol');
 
   useEffect(() => {
     const nombre = localStorage.getItem('nombre');
