@@ -12,7 +12,7 @@ const VerUbicaciones = () => {
   const [mostrarModalCantidad, setMostrarModalCantidad] = useState(false);
   const [productoDuplicado, setProductoDuplicado] = useState(null);
   const [mostrarModalDuplicado, setMostrarModalDuplicado] = useState(false);
-  const [ubicacionAnterior, setUbicacionAnterior] = useState('');
+  const [ubicacionAnterior] = useState('');
   const sucursalId = localStorage.getItem('sucursalId');
   const nombreSucursal = localStorage.getItem('nombreSucursal') || "Sucursal";
 

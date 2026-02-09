@@ -7,7 +7,6 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
     const [modoEdicion, setModoEdicion] = useState(false);
     const [cantidadEditada, setCantidadEditada] = useState(producto.cantidad);
     const [mostrarModal, setMostrarModal] = useState(false);
-    const [moviendo, setMoviendo] = useState(false);
 
     // Nuevos estados locales para mover ubicación
     const [tipoSeleccionado, setTipoSeleccionado] = useState('');
@@ -35,7 +34,6 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
     };
 
     const handleConfirmarReubicacion = async (nuevaUbicacion) => {
-        setMoviendo(true);
         try {
             const tipo = nuevaUbicacion.match(/^[A-Z]+/)[0];
             let resto = nuevaUbicacion.replace(tipo, '');
@@ -118,8 +116,6 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
         } catch (err) {
             console.error("❌ Error al reubicar:", err);
             alert('Error al reubicar');
-        } finally {
-            setMoviendo(false);
         }
     };
 

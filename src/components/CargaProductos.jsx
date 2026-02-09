@@ -35,7 +35,6 @@ const CargaProductos = ({
 }) => {
   const inputCodigoRef = useRef(null);
   const inputCantidadRef = useRef(null);
-  const [cargando, setCargando] = useState(false);
   const [mostrarFormulario, setMostrarFormulario] = useState(true);
   const [inputActivo, setInputActivo] = useState('codigo'); // 'codigo' o 'cantidad'
   const [mensajeEstado, setMensajeEstado] = useState('');
@@ -73,12 +72,10 @@ const CargaProductos = ({
       setErrorProducto('Cantidad inválida. Debe ser entre 1 y 999.');
       return;
     }
-    setCargando(true);
     setCodigoBarras('');
     setCantidad("");
     inputCodigoRef.current?.focus();
     const exito = await handleAgregarProducto(e);
-    setCargando(false);
     if (exito) {
       setMensajeEstado('✅ Agregado OK');
       setTimeout(() => setMensajeEstado(''), 2000);
@@ -93,6 +90,7 @@ const CargaProductos = ({
       }, 4000);
       return () => clearTimeout(timer);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [errorProducto]);
 
   const renderTecladoNumerico = () => (

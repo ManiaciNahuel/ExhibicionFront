@@ -15,7 +15,6 @@ const HomeSucursal = () => {
 
     const [codigoUbicacion, setCodigoUbicacion] = useState('');
     const [ubicacionConfirmada, setUbicacionConfirmada] = useState(false);
-    const [productosCargando, setProductosCargando] = useState(new Set());
     const [errorProducto, setErrorProducto] = useState('');
 
     const [codigoBarras, setCodigoBarras] = useState('');
@@ -38,14 +37,7 @@ const HomeSucursal = () => {
 
     const navigate = useNavigate();
 
-
-    useEffect(() => {
-        if (ubicacionConfirmada && codigoUbicacion) {
-            fetchProductosEnUbicacion();
-        }
-    }, [ubicacionConfirmada, codigoUbicacion]);
-
-    const fetchProductosEnUbicacion = async () => {
+    const fetchProductosEnUbicacion = React.useCallback(async () => {
         console.log("🔍 Fetching productos para:", { sucursalId, codigoUbicacion });
         try {
             const res = await axios.get(`https://exhibicionback-production.up.railway.app/ubicaciones`, {
@@ -59,7 +51,13 @@ const HomeSucursal = () => {
         } catch (error) {
             console.error("❌ Error al traer productos:", error);
         }
-    };
+    }, [sucursalId, codigoUbicacion]);
+
+    useEffect(() => {
+        if (ubicacionConfirmada && codigoUbicacion) {
+            fetchProductosEnUbicacion();
+        }
+    }, [ubicacionConfirmada, codigoUbicacion, fetchProductosEnUbicacion]);
 
     useEffect(() => {
         const fetchUbicacionesPermitidas = async () => {
@@ -148,8 +146,6 @@ const HomeSucursal = () => {
         setEnProceso(prev => new Set(prev).add(codigoBarras));
 
         try {
-            setProductosCargando(prev => new Set(prev).add(codigoBarras));
-
             let producto = null;
             let codigoUsado = codigoBarras;
 
@@ -262,11 +258,6 @@ const HomeSucursal = () => {
             return false;
         } finally {
             setEnProceso(prev => {
-                const nuevo = new Set(prev);
-                nuevo.delete(codigoBarras);
-                return nuevo;
-            });
-            setProductosCargando(prev => {
                 const nuevo = new Set(prev);
                 nuevo.delete(codigoBarras);
                 return nuevo;
