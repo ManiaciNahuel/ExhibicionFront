@@ -22,7 +22,7 @@ const SelectorUbicacion = ({
     console.error("❌ ERROR: setDivision no es una función. Valor recibido:", setDivision);
   }
   console.log("🚀 ubicacionesPermitidas:", ubicacionesPermitidas);
-  const divisionesDisponibles = tipoSeleccionado === 'G' && numeroSeleccionado
+  const divisionesDisponibles = (tipoSeleccionado === 'G') && numeroSeleccionado
     ? ubicacionesPermitidas
       .filter(u =>
         u.tipo === 'G' &&
@@ -44,7 +44,7 @@ const SelectorUbicacion = ({
     <form onSubmit={handleConfirmarUbicacion}>
       <div className="tipo-selector">
         <h4>Tipo de ubicación:</h4>
-        {["M", "G"].map((tipo) => (
+        {["M", "B", "G"].map((tipo) => (
           <button
             key={tipo}
             className={`tipo-btn ${tipoSeleccionado === tipo ? "activo" : ""}`}
@@ -57,7 +57,7 @@ const SelectorUbicacion = ({
               setSubdivisionSeleccionada('');
             }}
           >
-            {tipo === "M" ? "🧱 Módulo" : "🛒 Góndola"}
+            {tipo === "M" ? "🧱 Módulo" : tipo === "B" ? "📦 Bajo Mostrador" : "🛒 Góndola"}
           </button>
         ))}
       </div>

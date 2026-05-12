@@ -74,6 +74,7 @@ const BuscarProducto = () => {
   const nombreTipo = (tipo) => {
     if (tipo === 'G') return 'Góndola';
     if (tipo === 'M') return 'Módulo';
+    if (tipo === 'B') return 'Bajo Mostrador';
     if (tipo === 'P') return 'Puntera';
     return tipo;
   };

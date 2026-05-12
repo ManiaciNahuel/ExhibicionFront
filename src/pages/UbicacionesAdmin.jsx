@@ -46,7 +46,7 @@ const UbicacionesAdmin = () => {
     const crearUbicaciones = async () => {
         const datos = [];
         numerosSeleccionados.forEach(numero => {
-            if (tipo === 'M') {
+            if (tipo === 'M' || tipo === 'B') {
                 subdivisionesSeleccionadas.forEach(sub => {
                     const [subdivision, numeroSubdivision] = sub.split('-');
                     datos.push({
@@ -79,6 +79,11 @@ const UbicacionesAdmin = () => {
                 });
             }
         });
+
+        if (datos.length === 0) {
+            alert('Seleccioná número(s) y estante(s) antes de crear ubicaciones.');
+            return;
+        }
 
         try {
             await axios.post(`${BASE_URL}/ubicaciones/permitidas/crear`, datos);
@@ -117,7 +122,7 @@ const UbicacionesAdmin = () => {
             <div className="lado-derecho">
                 <div className="resumen-seleccion">
                     <h4>🔍 Resumen de selección:</h4>
-                    <p><strong>Tipo:</strong> {tipo === 'G' ? 'Góndola' : 'Módulo'}</p>
+                    <p><strong>Tipo:</strong> {tipo === 'G' ? 'Góndola' : tipo === 'M' ? 'Módulo' : 'Bajo Mostrador'}</p>
                     <p><strong>Números seleccionados:</strong> {[...numerosSeleccionados].join(', ')}</p>
                     {tipo === 'G' && <p><strong>Divisiones seleccionadas:</strong> {[...divisionesSeleccionadas].map(d => d.replace('-', ' ')).join(', ')}</p>}
                     <p><strong>Estantes seleccionados:</strong> {[...subdivisionesSeleccionadas].map(s => s.replace('-', '')).join(', ')}</p>
@@ -129,7 +134,7 @@ const UbicacionesAdmin = () => {
                         const [tipo, numero] = clave.split('-');
                         return (
                             <div key={clave} className="existente-item">
-                                <strong>{tipo === 'G' ? 'Góndola' : 'Módulo'} {numero}:</strong>
+                                <strong>{tipo === 'G' ? 'Góndola' : tipo === 'M' ? 'Módulo' : 'Bajo Mostrador'} {numero}:</strong>
                                 <ul>
                                     {Object.entries(divisiones).map(([divKey, estantes], i) => {
                                         const label = tipo === 'G'
@@ -174,12 +179,12 @@ const UbicacionesAdmin = () => {
                         <label>Tipo</label>
                         <select value={tipo} onChange={(e) => {
                             setTipo(e.target.value);
-                            setNumerosSeleccionados(new Set());
                             setDivisionesSeleccionadas(new Set());
                             setSubdivisionesSeleccionadas(new Set());
                         }}>
                             <option value="G">Góndola</option>
                             <option value="M">Módulo</option>
+                            <option value="B">Bajo Mostrador</option>
                         </select>
                     </div>
                     <div>
@@ -236,7 +241,14 @@ const UbicacionesAdmin = () => {
                     </div>
                 )}
 
-                {((tipo === 'M' && numerosSeleccionados.size > 0) || (tipo === 'G' && divisionesSeleccionadas.size > 0)) && (
+                {(tipo === 'M' || tipo === 'B') && numerosSeleccionados.size === 0 && (
+                    <div className="selector-subdivisiones">
+                        <h3>Estantes / filas:</h3>
+                        <p>Seleccioná uno o más números para habilitar los estantes.</p>
+                    </div>
+                )}
+
+                {(((tipo === 'M' || tipo === 'B') && numerosSeleccionados.size > 0) || (tipo === 'G' && divisionesSeleccionadas.size > 0)) && (
                     <div className="selector-subdivisiones">
                         <h3>Estantes / filas:</h3>
                         {[...Array(10).keys()].map(i => `E-${i + 1}`).map(skey => (

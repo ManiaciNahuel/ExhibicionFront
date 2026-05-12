@@ -165,7 +165,7 @@ const UbicacionesPorSucursal = () => {
 
             {sucursalSeleccionada && (
                 <div className="selector-numeros">
-                    <h3>Seleccioná número de {tipo === 'G' ? 'góndola' : 'módulo'}:</h3>
+                    <h3>Seleccioná número de {tipo === 'G' ? 'góndola' : tipo === 'M' ? 'módulo' : 'bajo mostrador'}:</h3>
                     {numeros.map(n => (
                         <button
                             key={n}
@@ -196,7 +196,7 @@ const UbicacionesPorSucursal = () => {
                 </div>
             )}
 
-            {(tipo === 'M' || (tipo === 'G' && divisionSeleccionada)) && numeroSeleccionado && (
+            {((tipo === 'M' || tipo === 'B') || (tipo === 'G' && divisionSeleccionada)) && numeroSeleccionado && (
                 <div className="lista-ubicaciones">
                     <h2>{tipo}{numeroSeleccionado}{divisionSeleccionada ? ` – ${divisionSeleccionada}` : ''} – Subdivisiones</h2>
                     {subdivisiones.map((u, i) => {
