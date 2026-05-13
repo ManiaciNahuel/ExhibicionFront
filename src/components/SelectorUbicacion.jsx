@@ -107,7 +107,7 @@ const SelectorUbicacion = ({
       )}
 
 
-      {(tipoSeleccionado === 'M' && numeroSeleccionado) ||
+      {((tipoSeleccionado === 'M' || tipoSeleccionado === 'B') && numeroSeleccionado) ||
         (tipoSeleccionado === 'G' && numeroSeleccionado && division && numeroDivision) ? (
         <div className="subdivision-selector">
           <h4>Estante / Fila de Ranurado:</h4>
