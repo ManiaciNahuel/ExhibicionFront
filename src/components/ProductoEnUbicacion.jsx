@@ -3,6 +3,8 @@ import axios from 'axios';
 import ConfirmarAccionModal from './ConfirmarAccionModal';
 import '../styles/ProductoEnUbicacion.css';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, onAgregarUbicacionSiFalta }) => {
     const [modoEdicion, setModoEdicion] = useState(false);
     const [cantidadEditada, setCantidadEditada] = useState(producto.cantidad);
@@ -21,7 +23,7 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
 
     const handleGuardar = async () => {
         try {
-            await axios.put(`https://exhibicionback-production.up.railway.app/ubicaciones/${producto.id}`, {
+            await axios.put(`${API_URL}/ubicaciones/${producto.id}`, {
                 cantidad: parseInt(cantidadEditada),
                 sucursalId: parseInt(localStorage.getItem('sucursalId'))
             });
@@ -70,7 +72,7 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
                 sucursalId
             });
 
-            const check = await axios.get(`https://exhibicionback-production.up.railway.app/ubicaciones?sucursal=${sucursalId}&ubicacion=${nuevaUbicacion}`);
+            const check = await axios.get(`${API_URL}/ubicaciones?sucursal=${sucursalId}&ubicacion=${nuevaUbicacion}`);
             const yaExiste = check.data.find(p => p.codebar === producto.codigo);
 
             if (yaExiste) {
@@ -78,14 +80,14 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
 
                 alert(`⚠️ El producto "${producto.nombre}" ya existe en la ubicación "${nuevaUbicacion}". 
     Si desea editar las cantidades, diríjase a esa ubicación. De todos modos, queda eliminado el producto de esta ubicación.`);
-                await axios.delete(`https://exhibicionback-production.up.railway.app/ubicaciones/${producto.id}`);
+                await axios.delete(`${API_URL}/ubicaciones/${producto.id}`);
                 onReubicar(producto.id);
                 setMostrarModal(false);
                 return;
             }
 
             // ✅ Crear en nueva ubicación
-            const res = await axios.post('https://exhibicionback-production.up.railway.app/ubicaciones', {
+            const res = await axios.post(`${API_URL}/ubicaciones`, {
                 codebar: producto.codebar || producto.codigo,
                 tipo,
                 numero,
@@ -108,7 +110,7 @@ const ProductoEnUbicacion = ({ producto, onActualizar, onEliminar, onReubicar, o
             };
 
             console.log("🗑 Eliminando producto con ID:", producto.id);
-            await axios.delete(`https://exhibicionback-production.up.railway.app/ubicaciones/${producto.id}`);
+            await axios.delete(`${API_URL}/ubicaciones/${producto.id}`);
             onReubicar(producto.id, nuevoProducto, nuevaUbic);
             onAgregarUbicacionSiFalta?.(nuevoProducto);
 

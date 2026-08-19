@@ -3,6 +3,8 @@ import SelectorUbicacion from './SelectorUbicacion';
 import axios from 'axios';
 import '../styles/ConfirmarAccionModal.css'
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const ConfirmarAccionModal = ({ onConfirm, onCancel, cantidad, producto }) => {
   const [ubicacionesPermitidas, setUbicacionesPermitidas] = useState([]);
   const [tipoSeleccionado, setTipoSeleccionado] = useState('');
@@ -17,7 +19,7 @@ const ConfirmarAccionModal = ({ onConfirm, onCancel, cantidad, producto }) => {
   useEffect(() => {
     const fetchUbicaciones = async () => {
       try {
-        const res = await axios.get(`https://exhibicionback-production.up.railway.app/ubicaciones/permitidas?sucursalId=${sucursalId}`);
+        const res = await axios.get(`${API_URL}/ubicaciones/permitidas?sucursalId=${sucursalId}`);
         const data = res.data.map(u => ({
           tipo: u.tipo,
           numeroUbicacion: u.numeroUbicacion,

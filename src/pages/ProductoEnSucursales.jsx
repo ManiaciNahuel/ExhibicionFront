@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/ProductoPorSucursal.css';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const ProductoPorSucursal = () => {
     const [codebar, setCodebar] = useState('');
     const [resultados, setResultados] = useState([]);
@@ -10,7 +12,7 @@ const ProductoPorSucursal = () => {
 
     const buscar = async () => {
         try {
-            const res = await fetch(`https://exhibicionback-production.up.railway.app/ubicaciones/compras/producto/${codebar}`);
+            const res = await fetch(`${API_URL}/ubicaciones/compras/producto/${codebar}`);
             const data = await res.json();
             setResultados(data);
         } catch (err) {

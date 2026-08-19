@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../styles/UbicacionesAdmin.css';
 
-const BASE_URL = 'https://exhibicionback-production.up.railway.app';
+const BASE_URL = process.env.REACT_APP_API_URL;
 
 const UbicacionesAdmin = () => {
     const [sucursales, setSucursales] = useState([]);

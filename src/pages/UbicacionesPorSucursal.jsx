@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/UbicacionesPorSucursal.css';
 
-const BASE_URL = 'https://exhibicionback-production.up.railway.app';
+const BASE_URL = process.env.REACT_APP_API_URL;
 
 const UbicacionesPorSucursal = () => {
     const [sucursales, setSucursales] = useState([]);
@@ -17,7 +17,21 @@ const UbicacionesPorSucursal = () => {
     const [ubicacionesVisibles, setUbicacionesVisibles] = useState(new Set());
     const navigate = useNavigate();
 
-    const planogramaSrc = sucursalSeleccionada ? `/planogramas/${sucursalSeleccionada.id}.png` : null;
+    const [planogramaSrc, setPlanogramaSrc] = useState(null);
+
+    useEffect(() => {
+        if (!sucursalSeleccionada) {
+            setPlanogramaSrc(null);
+            return;
+        }
+        fetch(`${BASE_URL}/planogramas/${sucursalSeleccionada.id}`)
+            .then(res => {
+                if (!res.ok) throw new Error('Sin planograma');
+                return res.json();
+            })
+            .then(data => setPlanogramaSrc(`${BASE_URL}${data.imagen}`))
+            .catch(() => setPlanogramaSrc(null));
+    }, [sucursalSeleccionada]);
 
     useEffect(() => {
         fetch(`${BASE_URL}/sucursales`)

@@ -7,6 +7,7 @@ import HomeSucursal from './pages/HomeSucursal';
 import DashboardSucursal from './pages/DashboardSucursal';
 import BuscarProducto from './components/BuscarProducto';
 import UbicacionesAdmin from './pages/UbicacionesAdmin';
+import PlanogramasAdmin from './pages/PlanogramasAdmin';
 import PanelCompras from './pages/PanelCompras';
 import ProductoPorSucursal from './pages/ProductoEnSucursales';
 import UbicacionesPorSucursal from './pages/UbicacionesPorSucursal';
@@ -55,6 +56,10 @@ const App = () => {
             <Route
               path="/admin/ubicaciones"
               element={<PrivateRoute isAuthenticated={!!usuario} element={<UbicacionesAdmin />} />}
+            />
+            <Route
+              path="/admin/planogramas"
+              element={<PrivateRoute isAuthenticated={!!usuario} element={<PlanogramasAdmin />} />}
             />
           </>
         ) : usuario?.rol === 'compras' ? (

@@ -4,6 +4,8 @@ import axios from 'axios';
 import '../styles/BuscarProductos.css'
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const BuscarProducto = () => {
   const [codigoBarras, setCodigoBarras] = useState('');
   const [resultado, setResultado] = useState(null);
@@ -22,7 +24,7 @@ const BuscarProducto = () => {
       const sucursalId = localStorage.getItem('sucursalId');
 
       const ubicacionesRes = await fetch(
-        `https://exhibicionback-production.up.railway.app/ubicaciones/producto/${codigoBarras}?sucursalId=${sucursalId}`
+        `${API_URL}/ubicaciones/producto/${codigoBarras}?sucursalId=${sucursalId}`
       );
       const ubicacionesData = await ubicacionesRes.json();
 
@@ -31,7 +33,7 @@ const BuscarProducto = () => {
         return;
       }
 
-      const productoRes = await fetch(`https://exhibicionback-production.up.railway.app/productos/${codigoBarras}`);
+      const productoRes = await fetch(`${API_URL}/productos/${codigoBarras}`);
       const producto = await productoRes.json();
 
       const ubicacionesTransformadas = ubicacionesData.map((ubic) => ({
@@ -62,7 +64,7 @@ const BuscarProducto = () => {
 
   const handleEliminarProducto = async (id) => {
     try {
-      await axios.delete(`https://exhibicionback-production.up.railway.app/ubicaciones/${id}`);
+      await axios.delete(`${API_URL}/ubicaciones/${id}`);
       // 🔁 Refrescamos la lista luego de eliminar
       buscarUbicaciones();
     } catch (err) {

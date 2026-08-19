@@ -13,6 +13,9 @@ const AdminDashboard = () => {
                 <button onClick={() => navigate('/admin/ubicaciones')} className="btn-verde">
                     ➕ Cargar ubicaciones permitidas
                 </button>
+                <button onClick={() => navigate('/admin/planogramas')} className="btn-verde">
+                    🖼 Gestionar planogramas
+                </button>
             </div>
         </div>
     );

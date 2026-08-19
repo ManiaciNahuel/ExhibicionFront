@@ -6,6 +6,8 @@ import SelectorUbicacion from '../components/SelectorUbicacion';
 import { useNavigate } from 'react-router-dom';
 import { saveAs } from 'file-saver';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const HomeSucursal = () => {
     const [tipoSeleccionado, setTipoSeleccionado] = useState('');
     const [numeroSeleccionado, setNumeroSeleccionado] = useState('');
@@ -33,14 +35,21 @@ const HomeSucursal = () => {
     const [enProceso, setEnProceso] = useState(new Set());
 
     const sucursalId = localStorage.getItem('sucursalId');
-    const planogramaSrc = `planogramas/${sucursalId}.png`;
+    const [planogramaSrc, setPlanogramaSrc] = useState('');
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!sucursalId) return;
+        axios.get(`${API_URL}/planogramas/${sucursalId}`)
+            .then(res => setPlanogramaSrc(`${API_URL}${res.data.imagen}`))
+            .catch(() => setPlanogramaSrc(''));
+    }, [sucursalId]);
 
     const fetchProductosEnUbicacion = React.useCallback(async () => {
         console.log("🔍 Fetching productos para:", { sucursalId, codigoUbicacion });
         try {
-            const res = await axios.get(`https://exhibicionback-production.up.railway.app/ubicaciones`, {
+            const res = await axios.get(`${API_URL}/ubicaciones`, {
                 params: {
                     sucursal: sucursalId,
                     ubicacion: codigoUbicacion
@@ -62,7 +71,7 @@ const HomeSucursal = () => {
     useEffect(() => {
         const fetchUbicacionesPermitidas = async () => {
             try {
-                const res = await axios.get(`https://exhibicionback-production.up.railway.app/ubicaciones/permitidas?sucursalId=${sucursalId}`);
+                const res = await axios.get(`${API_URL}/ubicaciones/permitidas?sucursalId=${sucursalId}`);
                 const data = res.data.map(u => ({
                     tipo: u.tipo,
                     numeroUbicacion: u.numeroUbicacion,
@@ -106,7 +115,7 @@ const HomeSucursal = () => {
         setLoading(true); // ⏳ Empezamos a cargar
 
         try {
-            const res = await axios.get(`https://exhibicionback-production.up.railway.app/ubicaciones`, {
+            const res = await axios.get(`${API_URL}/ubicaciones`, {
                 params: {
                     sucursal: sucursalId,
                     ubicacion: codigo
@@ -150,14 +159,14 @@ const HomeSucursal = () => {
             let codigoUsado = codigoBarras;
 
             try {
-                const res = await axios.get(`https://exhibicionback-production.up.railway.app/productos/${codigoBarras}`);
+                const res = await axios.get(`${API_URL}/productos/${codigoBarras}`);
                 producto = res.data;
             } catch (e) {
                 // No encontrado, intentamos sin ceros
                 if (/^0+/.test(codigoBarras)) {
                     const sinCeros = codigoBarras.replace(/^0+/, '');
                     try {
-                        const res2 = await axios.get(`https://exhibicionback-production.up.railway.app/productos/${sinCeros}`);
+                        const res2 = await axios.get(`${API_URL}/productos/${sinCeros}`);
                         producto = res2.data;
                         codigoUsado = sinCeros;
                     } catch (e2) {
@@ -213,7 +222,7 @@ const HomeSucursal = () => {
             const numSub = parseInt(resto.slice(1));
             const numeroSubdivision = Number.isNaN(numSub) ? null : numSub;
 
-            const resCheck = await axios.get(`https://exhibicionback-production.up.railway.app/ubicaciones/check`, {
+            const resCheck = await axios.get(`${API_URL}/ubicaciones/check`, {
                 params: { codplex: producto.CodPlex, sucursalId }
             });
 
@@ -270,7 +279,7 @@ const HomeSucursal = () => {
 
     const crearProducto = async (producto, codigo, cantidad, tipo, numero, subdivision, numeroSubdivision, division, numeroDivision) => {
         try {
-            const res = await axios.post(`https://exhibicionback-production.up.railway.app/ubicaciones`, {
+            const res = await axios.post(`${API_URL}/ubicaciones`, {
                 codebar: codigo,
                 codplex: producto.CodPlex,
                 tipo,
@@ -314,7 +323,7 @@ const HomeSucursal = () => {
 
     const handleEliminarProducto = async (id) => {
         try {
-            await axios.delete(`https://exhibicionback-production.up.railway.app/ubicaciones/${id}`);
+            await axios.delete(`${API_URL}/ubicaciones/${id}`);
             setProductosCargados(prev => prev.filter(p => p.id !== id));
         } catch (err) {
             console.error("❌ Error al eliminar producto", err);
@@ -328,7 +337,7 @@ const HomeSucursal = () => {
 
     const handleGuardarDesdeModal = async (id, nuevaCantidad) => {
         try {
-            await axios.put(`https://exhibicionback-production.up.railway.app/ubicaciones/${id}`, {
+            await axios.put(`${API_URL}/ubicaciones/${id}`, {
                 cantidad: parseInt(nuevaCantidad),
                 sucursalId: parseInt(sucursalId)
             });
@@ -357,13 +366,13 @@ const HomeSucursal = () => {
 
         if (opcion === 'mover') {
             try {
-                const resCheck = await axios.get(`https://exhibicionback-production.up.railway.app/ubicaciones/check`, {
+                const resCheck = await axios.get(`${API_URL}/ubicaciones/check`, {
                     params: { codebar, sucursalId }
                 });
 
                 const existente = resCheck.data.find(p => p.ubicacion !== codigoUbicacion);
                 if (existente?.id) {
-                    await axios.delete(`https://exhibicionback-production.up.railway.app/ubicaciones/${existente.id}`);
+                    await axios.delete(`${API_URL}/ubicaciones/${existente.id}`);
                 }
             } catch (err) {
                 console.error("❌ Error al eliminar ubicación anterior:", err);
@@ -404,27 +413,31 @@ const HomeSucursal = () => {
         <>
             <div className="carga-page" style={{ display: 'flex', gap: '2rem', padding: '2rem 1rem 0rem', marginTop: '2rem' }}>
                 <div style={{ flex: 1, maxWidth: '50vw', textAlign: 'center' }}>
-                    <img
-                        id="planograma-img"
-                        src={planogramaSrc}
-                        alt="Planograma"
-                        onClick={() => {
-                            const img = document.getElementById('planograma-img');
-                            if (document.fullscreenElement) {
-                                document.exitFullscreen();
-                            } else {
-                                img.requestFullscreen?.() || img.webkitRequestFullscreen?.() || img.msRequestFullscreen?.();
-                            }
-                        }}
-                        style={{
-                            width: '100%',
-                            borderRadius: '8px',
-                            border: '1px solid #ccc',
-                            cursor: 'pointer',
-                            maxHeight: '75vh',
-                            objectFit: 'contain'
-                        }}
-                    />
+                    {planogramaSrc ? (
+                        <img
+                            id="planograma-img"
+                            src={planogramaSrc}
+                            alt="Planograma"
+                            onClick={() => {
+                                const img = document.getElementById('planograma-img');
+                                if (document.fullscreenElement) {
+                                    document.exitFullscreen();
+                                } else {
+                                    img.requestFullscreen?.() || img.webkitRequestFullscreen?.() || img.msRequestFullscreen?.();
+                                }
+                            }}
+                            style={{
+                                width: '100%',
+                                borderRadius: '8px',
+                                border: '1px solid #ccc',
+                                cursor: 'pointer',
+                                maxHeight: '75vh',
+                                objectFit: 'contain'
+                            }}
+                        />
+                    ) : (
+                        <p>No hay planograma cargado para esta sucursal.</p>
+                    )}
 
 
                     <div
@@ -485,7 +498,7 @@ const HomeSucursal = () => {
                                     }
 
                                     const response = await fetch(
-                                        `https://exhibicionback-production.up.railway.app/ubicaciones/txt-info?${queryParams.toString()}`
+                                        `${API_URL}/ubicaciones/txt-info?${queryParams.toString()}`
                                     );
 
 

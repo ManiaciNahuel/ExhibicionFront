@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../styles/UbicacionesAdmin.css';
 
-const BASE_URL = 'https://exhibicionback-production.up.railway.app';
+const BASE_URL = process.env.REACT_APP_API_URL;
 
 const UbicacionesAdmin = () => {
     const [sucursales, setSucursales] = useState([]);
@@ -28,7 +28,17 @@ const UbicacionesAdmin = () => {
         }
     }, [sucursalSeleccionada]);
 
-    const planogramaSrc = sucursalSeleccionada ? `/planogramas/${sucursalSeleccionada.id}.png` : '';
+    const [planogramaSrc, setPlanogramaSrc] = useState('');
+
+    useEffect(() => {
+        if (!sucursalSeleccionada) {
+            setPlanogramaSrc('');
+            return;
+        }
+        axios.get(`${BASE_URL}/planogramas/${sucursalSeleccionada.id}`)
+            .then(res => setPlanogramaSrc(`${BASE_URL}${res.data.imagen}`))
+            .catch(() => setPlanogramaSrc(''));
+    }, [sucursalSeleccionada]);
 
 
     const handleToggleSet = (setState, value) => {

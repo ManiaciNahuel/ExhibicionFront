@@ -4,6 +4,8 @@ import ProductoEnUbicacion from '../components/ProductoEnUbicacion';
 import ModalEditarCantidad from '../components/ModalEditarCantidad';
 import ModalProductoEnOtraUbicacion from '../components/ModalProductoEnOtraUbicacion';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const VerUbicaciones = () => {
   const [ubicaciones, setUbicaciones] = useState([]);
   const [ubicacionActiva, setUbicacionActiva] = useState(null);
@@ -20,7 +22,7 @@ const VerUbicaciones = () => {
     const fetchUbicaciones = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`https://exhibicionback-production.up.railway.app/ubicaciones/todas?sucursalId=${sucursalId}`);
+        const res = await axios.get(`${API_URL}/ubicaciones/todas?sucursalId=${sucursalId}`);
         const data = res.data.map(u => ({
           ...u,
           productos: u.productos.map(p => ({
@@ -79,7 +81,7 @@ const VerUbicaciones = () => {
 
   const handleEliminarProducto = async (id) => {
     try {
-      await axios.delete(`https://exhibicionback-production.up.railway.app/ubicaciones/${id}`);
+      await axios.delete(`${API_URL}/ubicaciones/${id}`);
       const nuevasUbicaciones = ubicaciones.map(u => ({
         ...u,
         productos: u.productos.filter(p => p.id !== id)
@@ -93,7 +95,7 @@ const VerUbicaciones = () => {
 
   const handleGuardarDesdeModal = async (id, nuevaCantidad) => {
     try {
-      await axios.put(`https://exhibicionback-production.up.railway.app/ubicaciones/${id}`, {
+      await axios.put(`${API_URL}/ubicaciones/${id}`, {
         cantidad: parseInt(nuevaCantidad),
         sucursalId: parseInt(sucursalId)
       });
