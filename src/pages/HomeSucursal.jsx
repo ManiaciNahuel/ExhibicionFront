@@ -227,7 +227,7 @@ const HomeSucursal = () => {
             const yaEnOtraUbicacion = resCheck.data.find(p => p.ubicacion !== codigoUbicacion);
 
             if (yaEnOtraUbicacion) {
-                toast.info(`ℹ️ ${producto.Producto || 'Producto'} ya está en la ubicación ${yaEnOtraUbicacion.ubicacion}. Se agregó también acá.`);
+                toast.info(`${producto.Producto || 'Producto'} ya está en la ubicación ${yaEnOtraUbicacion.ubicacion}. Se agregó también acá.`);
             }
 
             // Lo agregamos (si ya estaba en otra ubicación, queda en ambas)
