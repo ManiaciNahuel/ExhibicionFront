@@ -5,6 +5,7 @@ import CargaProductos from '../components/CargaProductos';
 import SelectorUbicacion from '../components/SelectorUbicacion';
 import { useNavigate } from 'react-router-dom';
 import { saveAs } from 'file-saver';
+import { toast } from 'react-toastify';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -29,9 +30,6 @@ const HomeSucursal = () => {
     const [loading, setLoading] = useState(false);
     const [productoExistente, setProductoExistente] = useState(null);
     const [mostrarModalCantidad, setMostrarModalCantidad] = useState(false);
-    const [productoDuplicado, setProductoDuplicado] = useState(null);
-    const [ubicacionAnterior, setUbicacionAnterior] = useState('');
-    const [mostrarModalDuplicado, setMostrarModalDuplicado] = useState(false);
     const [enProceso, setEnProceso] = useState(new Set());
 
     const sucursalId = localStorage.getItem('sucursalId');
@@ -229,24 +227,10 @@ const HomeSucursal = () => {
             const yaEnOtraUbicacion = resCheck.data.find(p => p.ubicacion !== codigoUbicacion);
 
             if (yaEnOtraUbicacion) {
-                setProductoDuplicado({
-                    ...producto,
-                    codebar: codigoBarras,
-                    codplex: producto.CodPlex,
-                    cantidad,
-                    tipo: tipoUbicacion,
-                    numero,
-                    subdivision: letraSubdivision,
-                    numeroSubdivision,
-                    division: letraDivision,
-                    numeroDivision
-                });
-                setUbicacionAnterior(yaEnOtraUbicacion.ubicacion);
-                setMostrarModalDuplicado(true);
-                return;
+                toast.info(`ℹ️ ${producto.Producto || 'Producto'} ya está en la ubicación ${yaEnOtraUbicacion.ubicacion}. Se agregó también acá.`);
             }
 
-            // Si no está duplicado, lo agregamos
+            // Lo agregamos (si ya estaba en otra ubicación, queda en ambas)
             await crearProducto(
                 producto,
                 codigoUsado,
@@ -348,51 +332,6 @@ const HomeSucursal = () => {
         } catch (err) {
             console.error("❌ Error al actualizar cantidad desde modal:", err);
         }
-    };
-
-    const handleConfirmarDuplicado = async (opcion) => {
-        if (!productoDuplicado) return;
-
-        const {
-            codebar,
-            cantidad,
-            tipo,
-            numero,
-            subdivision,
-            numeroSubdivision,
-            division,
-            numeroDivision
-        } = productoDuplicado;
-
-        if (opcion === 'mover') {
-            try {
-                const resCheck = await axios.get(`${API_URL}/ubicaciones/check`, {
-                    params: { codebar, sucursalId }
-                });
-
-                const existente = resCheck.data.find(p => p.ubicacion !== codigoUbicacion);
-                if (existente?.id) {
-                    await axios.delete(`${API_URL}/ubicaciones/${existente.id}`);
-                }
-            } catch (err) {
-                console.error("❌ Error al eliminar ubicación anterior:", err);
-            }
-        }
-
-        await crearProducto(
-            productoDuplicado,
-            codebar,
-            cantidad,
-            tipo,
-            numero,
-            subdivision || null,
-            numeroSubdivision,
-            division || null,
-            numeroDivision
-        );
-
-        setMostrarModalDuplicado(false);
-        setProductoDuplicado(null);
     };
 
     useEffect(() => {
@@ -571,14 +510,7 @@ const HomeSucursal = () => {
                             mostrarModalCantidad={mostrarModalCantidad}
                             productoExistente={productoExistente}
                             handleGuardarDesdeModal={handleGuardarDesdeModal}
-                            mostrarModalDuplicado={mostrarModalDuplicado}
-                            productoDuplicado={productoDuplicado}
-                            ubicacionAnterior={ubicacionAnterior}
-                            handleConfirmarDuplicado={handleConfirmarDuplicado}
                             setMostrarModalCantidad={setMostrarModalCantidad}
-                            setMostrarModalDuplicado={setMostrarModalDuplicado}
-                            setProductoDuplicado={setProductoDuplicado}
-                            crearProducto={crearProducto}
                         />
                     )}
 

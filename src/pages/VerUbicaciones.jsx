@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import ProductoEnUbicacion from '../components/ProductoEnUbicacion';
 import ModalEditarCantidad from '../components/ModalEditarCantidad';
-import ModalProductoEnOtraUbicacion from '../components/ModalProductoEnOtraUbicacion';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -12,9 +11,6 @@ const VerUbicaciones = () => {
   const [loading, setLoading] = useState(true);
   const [productoExistente, setProductoExistente] = useState(null);
   const [mostrarModalCantidad, setMostrarModalCantidad] = useState(false);
-  const [productoDuplicado, setProductoDuplicado] = useState(null);
-  const [mostrarModalDuplicado, setMostrarModalDuplicado] = useState(false);
-  const [ubicacionAnterior] = useState('');
   const sucursalId = localStorage.getItem('sucursalId');
   const nombreSucursal = localStorage.getItem('nombreSucursal') || "Sucursal";
 
@@ -186,17 +182,6 @@ const VerUbicaciones = () => {
         />
       )}
 
-      {mostrarModalDuplicado && productoDuplicado && (
-        <ModalProductoEnOtraUbicacion
-          producto={productoDuplicado}
-          ubicacionAnterior={ubicacionAnterior}
-          onConfirmar={() => { }}
-          onClose={() => {
-            setMostrarModalDuplicado(false);
-            setProductoDuplicado(null);
-          }}
-        />
-      )}
     </div>
   );
 };

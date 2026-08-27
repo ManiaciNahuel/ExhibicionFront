@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import AdminDashboard from './pages/AdminDashboard';
 
 import Login from './pages/Login';
@@ -42,6 +44,7 @@ const App = () => {
 
   return (
     <Router>
+      <ToastContainer position="top-right" autoClose={4000} />
       <Routes>
         {usuario?.rol === 'admin' ? (
           <>

@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ProductoEnUbicacion from './ProductoEnUbicacion';
 import ModalEditarCantidad from './ModalEditarCantidad';
-import ModalProductoEnOtraUbicacion from './ModalProductoEnOtraUbicacion';
 import '../styles/CargaProductos.css';
 
 const CargaProductos = ({
@@ -24,14 +23,7 @@ const CargaProductos = ({
   mostrarModalCantidad,
   productoExistente,
   handleGuardarDesdeModal,
-  mostrarModalDuplicado,
-  productoDuplicado,
-  ubicacionAnterior,
-  handleConfirmarDuplicado,
-  setMostrarModalCantidad,
-  setMostrarModalDuplicado,
-  setProductoDuplicado,
-  crearProducto
+  setMostrarModalCantidad
 }) => {
   const inputCodigoRef = useRef(null);
   const inputCantidadRef = useRef(null);
@@ -271,18 +263,6 @@ const CargaProductos = ({
         />
       )}
 
-      {mostrarModalDuplicado && productoDuplicado && (
-        <ModalProductoEnOtraUbicacion
-          producto={productoDuplicado}
-          ubicacionAnterior={ubicacionAnterior}
-          onConfirmar={handleConfirmarDuplicado}
-          onClose={() => {
-            setMostrarModalDuplicado(false);
-            setProductoDuplicado(null);
-          }}
-          crearProducto={crearProducto}
-        />
-      )}
     </div>
   );
 };
